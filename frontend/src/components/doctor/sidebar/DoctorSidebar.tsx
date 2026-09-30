@@ -1,0 +1,302 @@
+import React from 'react';
+import { 
+  LayoutDashboard, 
+  Users, 
+  Calendar, 
+  Clock, 
+  CreditCard, 
+  FileText, 
+  BarChart3, 
+  ChevronLeft, 
+  ChevronRight, 
+  Stethoscope, 
+  Settings, 
+  HelpCircle, 
+  LogOut, 
+  X,
+  History,
+  Repeat,
+  HeartPulse,
+  Receipt
+} from 'lucide-react';
+import { useReception } from '../../../context/ReceptionContext';
+
+interface DoctorSidebarProps {
+  currentRoute: string;
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+  isMobileOpen: boolean;
+  onCloseMobile: () => void;
+  onNavigate: (route: string) => void;
+  onLogout: () => void;
+}
+
+export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
+  currentRoute,
+  isCollapsed,
+  onToggleCollapse,
+  isMobileOpen,
+  onCloseMobile,
+  onNavigate,
+  onLogout,
+}) => {
+  const { currentDoctorId, queues, appointments, followUps } = useReception();
+
+  // Filter queues & appointments for badge counts
+  const cleanDocId = currentDoctorId?.replace('doc-', '');
+  const doctorWaitingCount = queues.filter(q => (q.doctorId === currentDoctorId || q.doctorId === cleanDocId) && q.status === 'Waiting').length;
+  const doctorTodayAptCount = appointments.filter(a => (a.doctorId === currentDoctorId || a.doctorId === cleanDocId) && (a.status === 'Scheduled' || a.status === 'Waiting')).length;
+  const doctorFollowUpCount = followUps.filter(f => (f.doctorId === currentDoctorId || f.doctorId === cleanDocId) && f.status === 'Scheduled').length;
+
+  const navigationItems = [
+    {
+      id: 'dashboard',
+      label: 'Dashboard',
+      route: '/doctor/dashboard',
+      icon: LayoutDashboard,
+      badge: undefined,
+    },
+    {
+      id: 'appointments',
+      label: 'Appointments',
+      route: '/doctor/appointments',
+      icon: Calendar,
+      badge: doctorWaitingCount > 0 
+        ? `${doctorWaitingCount} waiting` 
+        : (doctorTodayAptCount > 0 ? `${doctorTodayAptCount}` : undefined),
+      badgeColor: doctorWaitingCount > 0 ? 'bg-amber-100 text-amber-800' : 'bg-[#F76762]/10 text-[#F76762]',
+    },
+    {
+      id: 'patients',
+      label: 'Patients',
+      route: '/doctor/patients',
+      icon: Users,
+    },
+    {
+      id: 'consultations',
+      label: 'Consultations',
+      route: '/doctor/consultations',
+      icon: Stethoscope,
+    },
+    {
+      id: 'prescriptions',
+      label: 'Prescriptions',
+      route: '/doctor/prescriptions',
+      icon: FileText,
+    },
+    {
+      id: 'charges',
+      label: 'Charges',
+      route: '/doctor/charges',
+      icon: Receipt,
+    },
+    {
+      id: 'history',
+      label: 'Patient History',
+      route: '/doctor/history',
+      icon: History,
+    },
+    {
+      id: 'followups',
+      label: 'Follow-ups',
+      route: '/doctor/follow-ups',
+      icon: Repeat,
+      badge: doctorFollowUpCount > 0 ? `${doctorFollowUpCount}` : undefined,
+      badgeColor: 'bg-emerald-100 text-emerald-700',
+    },
+    {
+      id: 'reports',
+      label: 'Reports',
+      route: '/doctor/reports',
+      icon: BarChart3,
+    },
+  ];
+
+  const handleNavClick = (route: string) => {
+    onNavigate(route);
+    onCloseMobile();
+  };
+
+  const isItemActive = (route: string) => {
+    if (route === '/doctor/dashboard') {
+      return currentRoute === '/doctor' || currentRoute === '/doctor/dashboard';
+    }
+    return currentRoute.startsWith(route);
+  };
+
+  return (
+    <>
+      {/* Mobile Backdrop */}
+      {isMobileOpen && (
+        <div
+          onClick={onCloseMobile}
+          className="fixed inset-0 bg-[#18212F]/40 backdrop-blur-xs z-40 lg:hidden animate-in fade-in duration-200"
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar Container */}
+      <aside
+        className={`
+          fixed top-0 bottom-0 left-0 z-50
+          bg-white border-r border-[#F1E4E1]
+          flex flex-col justify-between
+          transition-all duration-300 ease-in-out
+          ${isCollapsed ? 'w-18' : 'w-64'}
+          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}
+      >
+        {/* Top: Brand Wordmark & Collapse Toggle */}
+        <div className="h-18 sm:h-20 px-4 flex items-center justify-between border-b border-[#F1E4E1]">
+          {!isCollapsed && (
+            <button
+              onClick={() => handleNavClick('/doctor/dashboard')}
+              className="flex items-center gap-2.5 text-[#18212F] text-left cursor-pointer group"
+            >
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#F76762] to-[#FB866E] flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
+                <HeartPulse className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-base font-bold tracking-tight text-[#18212F] leading-tight">
+                  Aura<span className="text-[#F76762]">CMS</span>
+                </span>
+                <span className="text-[10px] font-semibold text-[#667085] tracking-wider uppercase">
+                  Doctor Workstation
+                </span>
+              </div>
+            </button>
+          )}
+
+          {isCollapsed && (
+            <button
+              onClick={() => handleNavClick('/doctor/dashboard')}
+              className="w-10 h-10 mx-auto rounded-xl bg-gradient-to-br from-[#F76762] to-[#FB866E] flex items-center justify-center text-white shadow-xs hover:scale-105 transition-transform cursor-pointer"
+              title="AuraCMS Doctor Workstation"
+            >
+              <HeartPulse className="w-5 h-5" />
+            </button>
+          )}
+
+          {/* Desktop Collapse Toggle */}
+          <button
+            onClick={onToggleCollapse}
+            className="hidden lg:flex items-center justify-center w-7 h-7 rounded-lg text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7] border border-transparent hover:border-[#F1E4E1] transition-all cursor-pointer"
+            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </button>
+
+          {/* Mobile Close Button */}
+          <button
+            onClick={onCloseMobile}
+            className="lg:hidden p-1.5 rounded-lg text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7] cursor-pointer"
+            aria-label="Close navigation"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Middle: Navigation Items */}
+        <div className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
+          {!isCollapsed && (
+            <div className="px-3 pb-2 text-[10px] font-bold text-[#667085] tracking-wider uppercase">
+              Clinical Navigation
+            </div>
+          )}
+
+          {navigationItems.map((item) => {
+            const active = isItemActive(item.route);
+            const Icon = item.icon;
+
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavClick(item.route)}
+                title={isCollapsed ? item.label : undefined}
+                className={`
+                  w-full flex items-center rounded-xl text-xs font-semibold
+                  transition-all duration-150 cursor-pointer group relative
+                  ${isCollapsed ? 'justify-center p-3' : 'px-3 py-2.5 gap-3'}
+                  ${
+                    active
+                      ? 'bg-[#F76762]/10 text-[#F76762] font-bold border-l-3 border-[#F76762]'
+                      : 'text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7]'
+                  }
+                `}
+              >
+                <Icon
+                  className={`
+                    w-4 h-4 shrink-0 transition-transform group-hover:scale-105
+                    ${active ? 'text-[#F76762]' : 'text-[#667085] group-hover:text-[#18212F]'}
+                  `}
+                />
+
+                {!isCollapsed && (
+                  <span className="truncate flex-1 text-left">
+                    {item.label}
+                  </span>
+                )}
+
+                {!isCollapsed && item.badge && (
+                  <span
+                    className={`
+                      px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0
+                      ${item.badgeColor || 'bg-[#F76762]/10 text-[#F76762]'}
+                    `}
+                  >
+                    {item.badge}
+                  </span>
+                )}
+
+                {/* Collapsed Tooltip */}
+                {isCollapsed && (
+                  <span className="sr-only">{item.label}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Bottom Section: Settings, Help & Support, Logout */}
+        <div className="p-3 border-t border-[#F1E4E1] space-y-1">
+          <button
+            onClick={() => handleNavClick('/doctor/reports')}
+            title={isCollapsed ? 'Settings' : undefined}
+            className={`
+              w-full flex items-center rounded-xl text-xs font-medium text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7] transition-colors cursor-pointer
+              ${isCollapsed ? 'justify-center p-2.5' : 'px-3 py-2 gap-3'}
+            `}
+          >
+            <Settings className="w-4 h-4 shrink-0" />
+            {!isCollapsed && <span>Settings</span>}
+          </button>
+
+          <button
+            onClick={() => handleNavClick('/doctor/appointments')}
+            title={isCollapsed ? 'Help & Support' : undefined}
+            className={`
+              w-full flex items-center rounded-xl text-xs font-medium text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7] transition-colors cursor-pointer
+              ${isCollapsed ? 'justify-center p-2.5' : 'px-3 py-2 gap-3'}
+            `}
+          >
+            <HelpCircle className="w-4 h-4 shrink-0" />
+            {!isCollapsed && <span>Help & Support</span>}
+          </button>
+
+          <button
+            onClick={onLogout}
+            title={isCollapsed ? 'Logout' : undefined}
+            className={`
+              w-full flex items-center rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer
+              ${isCollapsed ? 'justify-center p-2.5' : 'px-3 py-2 gap-3'}
+            `}
+          >
+            <LogOut className="w-4 h-4 shrink-0" />
+            {!isCollapsed && <span>Sign Out</span>}
+          </button>
+        </div>
+      </aside>
+    </>
+  );
+};

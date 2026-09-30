@@ -1,0 +1,6 @@
+{
+  "name": "AuraCMS — Small Clinic Management System",
+  "description": "A modern, unified clinic management system for small practices. Seamlessly orchestrate appointments, doctor queues, consultations, digital prescriptions, flexible payments, and optional pharmacy operations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
