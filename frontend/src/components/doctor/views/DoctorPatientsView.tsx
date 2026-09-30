@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useReception } from '../../../context/ReceptionContext';
 import { Patient } from '../../../types/reception';
+import { getPatientAgeDisplay } from '../../../utils/validation';
 
 interface DoctorPatientsViewProps {
   onNavigate: (route: string) => void;
@@ -111,7 +112,7 @@ export const DoctorPatientsView: React.FC<DoctorPatientsViewProps> = ({ onNaviga
                       {p.uhid}
                     </td>
                     <td className="py-3 px-4 text-[#667085]">
-                      {p.age} Yrs · {p.gender}
+                      {getPatientAgeDisplay(p)} · {p.gender}
                     </td>
                     <td className="py-3 px-4">
                       {p.allergies ? (
@@ -182,7 +183,7 @@ export const DoctorPatientsView: React.FC<DoctorPatientsViewProps> = ({ onNaviga
                     {selectedPatientForHistory.fullName}
                   </h3>
                   <div className="text-[11px] text-[#667085] font-mono">
-                    {selectedPatientForHistory.uhid} · {selectedPatientForHistory.age}y/{selectedPatientForHistory.gender} · {selectedPatientForHistory.mobile}
+                    {selectedPatientForHistory.uhid} · {getPatientAgeDisplay(selectedPatientForHistory)}/{selectedPatientForHistory.gender} · {selectedPatientForHistory.mobile}
                   </div>
                 </div>
               </div>

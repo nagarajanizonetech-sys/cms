@@ -85,8 +85,8 @@ export const EditBillModal: React.FC<EditBillModalProps> = ({
       if (item.id !== id) return item;
       const updated = { ...item, [field]: value };
       if (field === 'unit_price' || field === 'quantity') {
-        const u = field === 'unit_price' ? parseFloat(value) || 0 : item.unit_price;
-        const q = field === 'quantity' ? parseInt(value, 10) || 1 : item.quantity;
+        const u = field === 'unit_price' ? Math.max(0, parseFloat(value) || 0) : item.unit_price;
+        const q = field === 'quantity' ? Math.max(1, parseInt(value, 10) || 1) : item.quantity;
         updated.unit_price = u;
         updated.quantity = q;
         updated.total = Math.round(u * q * 100) / 100;
@@ -151,7 +151,12 @@ export const EditBillModal: React.FC<EditBillModalProps> = ({
     }
 
     if (items.some(it => it.unit_price < 0)) {
-      setError('Item unit prices cannot be negative.');
+      setError('Item unit prices must be positive numeric amounts.');
+      return;
+    }
+
+    if (items.some(it => it.quantity <= 0)) {
+      setError('Item quantity must be at least 1.');
       return;
     }
 

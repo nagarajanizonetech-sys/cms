@@ -19,6 +19,7 @@ import {
 import { useReception } from '../../../context/ReceptionContext';
 import { DoctorStatus, Doctor } from '../../../types/reception';
 import { NotificationsDropdown } from '../../reception/header/NotificationsDropdown';
+import { getPatientAgeDisplay } from '../../../utils/validation';
 
 const FALLBACK_DOCTOR: Doctor = {
   id: '1',
@@ -119,14 +120,14 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
                 <span>Doctor Workstation</span>
               </span>
               <span className="text-[#667085] text-xs">/</span>
-              <span className="text-xs font-medium text-[#667085] truncate">
+              <span className="text-xs font-semibold text-[#667085] truncate">
                 {currentDoctor?.name || 'Attending Physician'}
               </span>
             </div>
-            <h1 className="text-base sm:text-lg font-bold text-[#18212F] tracking-tight truncate leading-tight">
+            <h1 className="text-lg sm:text-xl font-bold text-[#18212F] tracking-tight truncate leading-tight">
               {title}
             </h1>
-            <p className="hidden md:block text-[11px] text-[#667085] truncate">
+            <p className="hidden md:block text-xs text-[#667085] truncate">
               {description}
             </p>
           </div>
@@ -137,7 +138,7 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
           
           {/* Global Clinical Search */}
           <div ref={searchBoxRef} className="relative hidden md:block">
-            <div className={`relative flex items-center transition-all ${isSearchFocused ? 'w-72' : 'w-52'}`}>
+            <div className={`relative flex items-center transition-all ${isSearchFocused ? 'w-72' : 'w-56'}`}>
               <Search className="w-4 h-4 text-[#667085] absolute left-3 pointer-events-none" />
               <input
                 type="text"
@@ -145,7 +146,7 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
-                className="w-full pl-9 pr-8 py-2 bg-[#FFF9F7] hover:bg-white focus:bg-white text-xs text-[#18212F] rounded-xl border border-[#F1E4E1] focus:border-[#F76762] focus:outline-none transition-all placeholder:text-[#667085]/70"
+                className="w-full pl-9 pr-8 py-2 bg-[#FFF9F7] hover:bg-white focus:bg-white text-sm text-[#18212F] rounded-xl border border-[#F1E4E1] focus:border-[#F76762] focus:outline-none transition-all placeholder:text-[#667085]/70"
               />
               {searchQuery && (
                 <button
@@ -176,7 +177,7 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
                     >
                       <div>
                         <div className="font-semibold text-[#18212F]">{patient.fullName}</div>
-                        <div className="text-[10px] text-[#667085] font-mono">{patient.uhid} · {patient.age}y/{patient.gender}</div>
+                        <div className="text-[10px] text-[#667085] font-mono">{patient.uhid} · {getPatientAgeDisplay(patient)}/{patient.gender}</div>
                       </div>
                       <span className="text-[10px] text-[#F76762] font-semibold bg-[#F76762]/10 px-1.5 py-0.5 rounded">
                         View
@@ -246,11 +247,11 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
                 {currentDoctor?.name ? currentDoctor.name.replace('Dr. ', '').charAt(0) : 'D'}
               </div>
               <div className="hidden sm:flex flex-col text-left">
-                <span className="text-xs font-bold text-[#18212F] leading-tight flex items-center gap-1">
+                <span className="text-sm font-bold text-[#18212F] leading-tight flex items-center gap-1">
                   <span>{currentDoctor?.name || 'Dr. Sarah K.'}</span>
-                  <ChevronDown className="w-3 h-3 text-[#667085]" />
+                  <ChevronDown className="w-3.5 h-3.5 text-[#667085]" />
                 </span>
-                <span className="text-[10px] text-[#667085] leading-none mt-0.5">
+                <span className="text-xs text-[#667085] leading-none mt-0.5">
                   {currentDoctor?.room ? currentDoctor.room.split('·')[0].trim() : 'Room 101'}
                 </span>
               </div>

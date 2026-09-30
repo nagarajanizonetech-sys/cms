@@ -97,6 +97,14 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
 
   const handleConfirmReschedule = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!newDate) {
+      setToastMessage('Appointment date is required.');
+      return;
+    }
+    if (newDate < todayStr) {
+      setToastMessage('Appointment date cannot be in the past.');
+      return;
+    }
     if (reschedulingAptId && newDate) {
       rescheduleAppointment(reschedulingAptId, newDate, newTime);
       setReschedulingAptId(null);
@@ -402,9 +410,10 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                 <input
                   type="date"
                   required
+                  min={todayStr}
                   value={newDate}
                   onChange={(e) => setNewDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-xs"
+                  className="w-full px-3 py-2 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-xs font-semibold text-[#18212F]"
                 />
               </div>
               <div className="space-y-1">

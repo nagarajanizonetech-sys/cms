@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
-import { X, UserPlus, AlertCircle, CheckCircle2, Heart, Shield, Phone, MapPin, Activity } from 'lucide-react';
+import { X, UserPlus, AlertCircle, Shield, Phone, MapPin, Activity } from 'lucide-react';
 import { useReception } from '../../../context/ReceptionContext';
 import { Patient } from '../../../types/reception';
+import { 
+  isValidIndianMobile, 
+  sanitizeMobileInput, 
+  isValidEmail, 
+  calculateAgeFromDOB, 
+  isFutureDate, 
+  getTodayDateString, 
+  isValidPatientName 
+} from '../../../utils/validation';
 
 interface PatientRegistrationModalProps {
   onClose: () => void;
@@ -19,6 +28,7 @@ export const PatientRegistrationModal: React.FC<PatientRegistrationModalProps> =
   const [gender, setGender] = useState<'Male' | 'Female' | 'Other'>('Male');
   const [dob, setDob] = useState('');
   const [age, setAge] = useState<number | ''>('');
+  const [ageDisplay, setAgeDisplay] = useState('');
   const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
 
@@ -37,53 +47,120 @@ export const PatientRegistrationModal: React.FC<PatientRegistrationModalProps> =
   const [medicalConditions, setMedicalConditions] = useState('');
 
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Auto calculate age when DOB changes
+  // Auto calculate age when DOB changes (DOB is source of truth)
   const handleDobChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setDob(val);
-    if (val) {
-      const birthDate = new Date(val);
-      const today = new Date();
-      let calculatedAge = today.getFullYear() - birthDate.getFullYear();
-      const m = today.getMonth() - birthDate.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        calculatedAge--;
-      }
-      if (calculatedAge >= 0 && calculatedAge < 130) {
-        setAge(calculatedAge);
-      }
+
+    if (!val) {
+      setAge('');
+      setAgeDisplay('');
+      setFieldErrors((prev) => {
+        const copy = { ...prev };
+        delete copy.dob;
+        return copy;
+      });
+      return;
+    }
+
+    if (isFutureDate(val)) {
+      setFieldErrors((prev) => ({ ...prev, dob: 'Date of birth cannot be in the future.' }));
+      setAge('');
+      setAgeDisplay('');
+      return;
+    }
+
+    const calc = calculateAgeFromDOB(val);
+    if (calc) {
+      setAge(calc.years);
+      setAgeDisplay(calc.displayText);
+      setFieldErrors((prev) => {
+        const copy = { ...prev };
+        delete copy.dob;
+        delete copy.age;
+        return copy;
+      });
+    } else {
+      setFieldErrors((prev) => ({ ...prev, dob: 'Date of birth cannot be in the future.' }));
+      setAge('');
+      setAgeDisplay('');
+    }
+  };
+
+  const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const sanitized = sanitizeMobileInput(e.target.value);
+    setMobile(sanitized);
+    if (sanitized.length === 10 && isValidIndianMobile(sanitized)) {
+      setFieldErrors((prev) => {
+        const copy = { ...prev };
+        delete copy.mobile;
+        return copy;
+      });
+    }
+  };
+
+  const handleEmergencyPhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const sanitized = sanitizeMobileInput(e.target.value);
+    setEmergencyPhone(sanitized);
+    if (sanitized.length === 10 && isValidIndianMobile(sanitized)) {
+      setFieldErrors((prev) => {
+        const copy = { ...prev };
+        delete copy.emergencyPhone;
+        return copy;
+      });
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    const newErrors: { [key: string]: string } = {};
 
-    if (!fullName.trim()) {
-      setError('Please provide the patient full name.');
-      return;
+    const trimmedName = fullName.trim();
+    if (!trimmedName) {
+      newErrors.fullName = 'Full name is required.';
+    } else if (!isValidPatientName(trimmedName)) {
+      newErrors.fullName = 'Please enter a valid patient name.';
     }
 
-    if (!mobile.trim() || mobile.replace(/\D/g, '').length < 7) {
-      setError('Please enter a valid mobile number (min 7 digits).');
-      return;
+    if (!mobile.trim()) {
+      newErrors.mobile = 'Phone number is required.';
+    } else if (!isValidIndianMobile(mobile)) {
+      newErrors.mobile = 'Enter a valid 10-digit mobile number.';
     }
 
-    if (age === '' || Number(age) < 0) {
-      setError('Please enter a valid age or date of birth.');
+    if (!dob) {
+      newErrors.dob = 'Date of birth is required.';
+    } else if (isFutureDate(dob)) {
+      newErrors.dob = 'Date of birth cannot be in the future.';
+    }
+
+    if (email.trim() && !isValidEmail(email)) {
+      newErrors.email = 'Enter a valid email address.';
+    }
+
+    if (emergencyPhone.trim() && !isValidIndianMobile(emergencyPhone)) {
+      newErrors.emergencyPhone = 'Enter a valid 10-digit mobile number.';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      setError(Object.values(newErrors)[0]);
       return;
     }
 
     setIsSubmitting(true);
 
     try {
+      const calculatedAgeValue = typeof age === 'number' ? age : 0;
       const res = await registerPatient({
-        fullName: fullName.trim(),
+        fullName: trimmedName,
         gender,
-        dob: dob || '1990-01-01',
-        age: Number(age),
+        dob,
+        age: calculatedAgeValue,
         mobile: mobile.trim(),
         email: email.trim() || undefined,
         bloodGroup,
@@ -119,60 +196,81 @@ export const PatientRegistrationModal: React.FC<PatientRegistrationModalProps> =
       <div className="bg-white rounded-2xl border border-[#F1E4E1] shadow-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
         
         {/* Header */}
-        <div className="p-4 border-b border-[#F1E4E1] flex items-center justify-between bg-[#FFF9F7]">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#F76762] to-[#FB866E] text-white flex items-center justify-center">
-              <UserPlus className="w-4 h-4" />
+        <div className="p-4 sm:p-5 border-b border-[#F1E4E1] flex items-center justify-between bg-[#FFF9F7]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#F76762] to-[#FB866E] text-white flex items-center justify-center shadow-xs">
+              <UserPlus className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-sm font-bold text-[#18212F]">Register New Patient</div>
-              <div className="text-[11px] text-[#667085]">Automatic UHID generation & electronic clinic record</div>
+              <div className="text-base font-bold text-[#18212F]">New Patient Registration</div>
+              <div className="text-xs text-[#667085]">Create official medical record with verified UHID</div>
             </div>
           </div>
           <button
             onClick={onClose}
             className="p-1.5 text-[#667085] hover:text-[#18212F] rounded-lg hover:bg-white transition-colors cursor-pointer"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Form Content */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-6 text-xs">
+        {/* Form Body */}
+        <form onSubmit={handleSubmit} className="p-5 sm:p-6 overflow-y-auto space-y-5 text-sm custom-scrollbar">
           
-          {/* Section 1: Basic Information */}
-          <div className="space-y-3">
+          {/* Section 1: Demographics */}
+          <div className="space-y-3.5">
             <div className="flex items-center gap-2 text-[#F76762] font-bold text-xs uppercase tracking-wider">
-              <Heart className="w-3.5 h-3.5" />
-              <span>1. Basic Personal Information</span>
+              <UserPlus className="w-3.5 h-3.5" />
+              <span>1. Basic Information</span>
             </div>
-
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {/* Full Name */}
               <div className="space-y-1">
-                <label className="font-semibold text-[#18212F]">Full Legal Name *</label>
+                <label className="font-semibold text-[#18212F]">Full Name *</label>
                 <input
                   type="text"
-                  required
                   placeholder="e.g. Jessica Miller"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-[#18212F] focus:outline-none focus:border-[#F76762]"
+                  onChange={(e) => {
+                    setFullName(e.target.value);
+                    if (e.target.value.trim()) {
+                      setFieldErrors((prev) => {
+                        const copy = { ...prev };
+                        delete copy.fullName;
+                        return copy;
+                      });
+                    }
+                  }}
+                  className={`w-full px-3 py-2 bg-[#FFF9F7] border rounded-xl text-[#18212F] focus:outline-none transition-colors ${
+                    fieldErrors.fullName ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-[#F1E4E1] focus:border-[#F76762]'
+                  }`}
                 />
+                {fieldErrors.fullName && (
+                  <p className="text-xs text-red-600 font-medium">{fieldErrors.fullName}</p>
+                )}
               </div>
 
+              {/* Phone Number */}
               <div className="space-y-1">
-                <label className="font-semibold text-[#18212F]">Mobile Number (Required for UHID) *</label>
+                <label className="font-semibold text-[#18212F]">Phone Number (10 digits) *</label>
                 <input
                   type="tel"
-                  required
-                  placeholder="+1 (555) 000-0000"
+                  maxLength={10}
+                  placeholder="9876543210"
                   value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-[#18212F] focus:outline-none focus:border-[#F76762]"
+                  onChange={handleMobileChange}
+                  className={`w-full px-3 py-2 bg-[#FFF9F7] border rounded-xl text-[#18212F] focus:outline-none transition-colors font-mono ${
+                    fieldErrors.mobile ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-[#F1E4E1] focus:border-[#F76762]'
+                  }`}
                 />
+                {fieldErrors.mobile && (
+                  <p className="text-xs text-red-600 font-medium">{fieldErrors.mobile}</p>
+                )}
               </div>
 
-              <div className="grid grid-cols-3 gap-2">
+              {/* Gender, Blood Group */}
+              <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
                   <label className="font-semibold text-[#18212F]">Gender *</label>
                   <select
@@ -184,20 +282,6 @@ export const PatientRegistrationModal: React.FC<PatientRegistrationModalProps> =
                     <option value="Female">Female</option>
                     <option value="Other">Other</option>
                   </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-[#18212F]">Age *</label>
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    max="125"
-                    placeholder="e.g. 34"
-                    value={age}
-                    onChange={(e) => setAge(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-                    className="w-full px-2 py-2 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-[#18212F] focus:outline-none focus:border-[#F76762]"
-                  />
                 </div>
 
                 <div className="space-y-1">
@@ -219,25 +303,59 @@ export const PatientRegistrationModal: React.FC<PatientRegistrationModalProps> =
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="font-semibold text-[#18212F]">Date of Birth</label>
-                <input
-                  type="date"
-                  value={dob}
-                  onChange={handleDobChange}
-                  className="w-full px-3 py-2 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-[#18212F] focus:outline-none focus:border-[#F76762]"
-                />
+              {/* Date of Birth (Source of Truth) & Calculated Age */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="font-semibold text-[#18212F]">Date of Birth *</label>
+                  <input
+                    type="date"
+                    max={getTodayDateString()}
+                    value={dob}
+                    onChange={handleDobChange}
+                    className={`w-full px-2.5 py-2 bg-[#FFF9F7] border rounded-xl text-[#18212F] focus:outline-none transition-colors ${
+                      fieldErrors.dob ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-[#F1E4E1] focus:border-[#F76762]'
+                    }`}
+                  />
+                  {fieldErrors.dob && (
+                    <p className="text-xs text-red-600 font-medium">{fieldErrors.dob}</p>
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-semibold text-[#18212F]">Age (Calculated)</label>
+                  <div className="w-full px-3 py-2 bg-[#FFF9F7]/60 border border-[#F1E4E1] rounded-xl text-[#18212F] font-medium flex items-center justify-between">
+                    <span>{ageDisplay || (dob ? 'Calculating...' : 'Select DOB')}</span>
+                    {ageDisplay && (
+                      <span className="text-[11px] font-semibold text-[#F76762] bg-[#F76762]/10 px-1.5 py-0.5 rounded">Auto</span>
+                    )}
+                  </div>
+                </div>
               </div>
 
+              {/* Email Address */}
               <div className="space-y-1 sm:col-span-2">
                 <label className="font-semibold text-[#18212F]">Email Address (Optional)</label>
                 <input
                   type="email"
                   placeholder="patient@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-[#18212F] focus:outline-none focus:border-[#F76762]"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (fieldErrors.email) {
+                      setFieldErrors((prev) => {
+                        const copy = { ...prev };
+                        delete copy.email;
+                        return copy;
+                      });
+                    }
+                  }}
+                  className={`w-full px-3 py-2 bg-[#FFF9F7] border rounded-xl text-[#18212F] focus:outline-none transition-colors ${
+                    fieldErrors.email ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-[#F1E4E1] focus:border-[#F76762]'
+                  }`}
                 />
+                {fieldErrors.email && (
+                  <p className="text-xs text-red-600 font-medium">{fieldErrors.email}</p>
+                )}
               </div>
             </div>
           </div>
@@ -290,14 +408,20 @@ export const PatientRegistrationModal: React.FC<PatientRegistrationModalProps> =
                 />
               </div>
               <div className="space-y-1">
-                <label className="font-semibold text-[#18212F]">Emergency Phone</label>
+                <label className="font-semibold text-[#18212F]">Emergency Phone (10 digits)</label>
                 <input
                   type="tel"
-                  placeholder="+1 (555) 000-0000"
+                  maxLength={10}
+                  placeholder="9876543210"
                   value={emergencyPhone}
-                  onChange={(e) => setEmergencyPhone(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-[#18212F] focus:outline-none focus:border-[#F76762]"
+                  onChange={handleEmergencyPhoneChange}
+                  className={`w-full px-3 py-2 bg-[#FFF9F7] border rounded-xl text-[#18212F] focus:outline-none transition-colors font-mono ${
+                    fieldErrors.emergencyPhone ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-[#F1E4E1] focus:border-[#F76762]'
+                  }`}
                 />
+                {fieldErrors.emergencyPhone && (
+                  <p className="text-xs text-red-600 font-medium">{fieldErrors.emergencyPhone}</p>
+                )}
               </div>
               <div className="space-y-1">
                 <label className="font-semibold text-[#18212F]">Relationship</label>
@@ -356,7 +480,7 @@ export const PatientRegistrationModal: React.FC<PatientRegistrationModalProps> =
           )}
 
           {/* UHID note */}
-          <div className="text-[11px] text-[#667085] flex items-center gap-1.5 bg-[#FFF9F7] p-2.5 rounded-xl border border-[#F1E4E1]">
+          <div className="text-xs text-[#667085] flex items-center gap-1.5 bg-[#FFF9F7] p-2.5 rounded-xl border border-[#F1E4E1]">
             <Shield className="w-4 h-4 text-[#F76762] shrink-0" />
             <span>A unique permanent UHID will be assigned immediately and added to the clinic database.</span>
           </div>
@@ -366,14 +490,14 @@ export const PatientRegistrationModal: React.FC<PatientRegistrationModalProps> =
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 bg-white border border-[#F1E4E1] text-[#667085] hover:text-[#18212F] font-semibold rounded-xl cursor-pointer transition-colors"
+              className="flex-1 py-2.5 bg-white border border-[#F1E4E1] text-[#667085] hover:text-[#18212F] font-semibold rounded-xl cursor-pointer transition-colors text-sm"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2.5 bg-gradient-to-r from-[#F76762] to-[#FB866E] text-white font-semibold rounded-xl shadow-xs hover:opacity-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 bg-gradient-to-r from-[#F76762] to-[#FB866E] text-white font-semibold rounded-xl shadow-xs hover:opacity-95 transition-all cursor-pointer flex items-center justify-center gap-1.5 text-sm"
             >
               <UserPlus className="w-4 h-4" />
               <span>{isSubmitting ? 'Registering Patient...' : 'Register Patient'}</span>

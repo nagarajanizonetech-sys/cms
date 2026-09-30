@@ -223,6 +223,10 @@ export const AppointmentCalendar: React.FC<AppointmentCalendarProps> = ({
 
   const handleConfirmReschedule = () => {
     if (!activeAppointment || !newRescheduleDate) return;
+    if (newRescheduleDate < todayStr) {
+      showToast('Appointment date cannot be in the past.');
+      return;
+    }
     rescheduleAppointment(activeAppointment.id, newRescheduleDate, newRescheduleTime);
     setIsRescheduling(false);
     setActiveAppointment(null);
@@ -637,6 +641,7 @@ export const AppointmentCalendar: React.FC<AppointmentCalendarProps> = ({
                       <label className="text-[10px] font-semibold text-amber-900 block mb-1">New Date</label>
                       <input
                         type="date"
+                        min={todayStr}
                         value={newRescheduleDate}
                         onChange={(e) => setNewRescheduleDate(e.target.value)}
                         className="w-full px-2 py-1.5 bg-white border border-amber-300 rounded-lg text-xs focus:outline-none"

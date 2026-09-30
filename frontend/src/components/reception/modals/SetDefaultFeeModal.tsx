@@ -22,7 +22,7 @@ export const SetDefaultFeeModal: React.FC<SetDefaultFeeModalProps> = ({ onClose,
     setError(null);
 
     if (fee <= 0) {
-      setError('Please specify a default consultation amount greater than zero.');
+      setError('Enter a valid amount.');
       return;
     }
 
@@ -115,8 +115,11 @@ export const SetDefaultFeeModal: React.FC<SetDefaultFeeModalProps> = ({ onClose,
                 step="1"
                 min="1"
                 required
-                value={fee}
-                onChange={(e) => setFee(parseFloat(e.target.value) || 0)}
+                value={fee || ''}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value);
+                  setFee(isNaN(val) ? 0 : Math.max(0, val));
+                }}
                 className="w-full pl-9 pr-3 py-2 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-base font-bold font-mono text-[#18212F] focus:outline-none focus:border-[#F76762]"
                 placeholder="500"
               />

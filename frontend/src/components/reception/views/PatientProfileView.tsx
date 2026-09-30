@@ -20,6 +20,7 @@ import {
 import { useReception } from '../../../context/ReceptionContext';
 import { Patient, Bill } from '../../../types/reception';
 import { EditBillModal } from '../modals/EditBillModal';
+import { getPatientAgeDisplay } from '../../../utils/validation';
 
 interface PatientProfileViewProps {
   patientId: string;
@@ -97,7 +98,7 @@ export const PatientProfileView: React.FC<PatientProfileViewProps> = ({
                 </span>
               </div>
               <div className="flex flex-wrap items-center gap-3 mt-1.5 text-[#667085] text-xs">
-                <span>{patient.age} yrs · {patient.gender}</span>
+                <span>{getPatientAgeDisplay(patient)} · {patient.gender}</span>
                 <span>•</span>
                 <span className="font-mono">{patient.mobile}</span>
                 <span>•</span>

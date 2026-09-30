@@ -22,6 +22,7 @@ import {
   Repeat
 } from 'lucide-react';
 import { useReception } from '../../../context/ReceptionContext';
+import { getPatientAgeDisplay } from '../../../utils/validation';
 
 interface PatientHistoryViewProps {
   onSelectPatient: (patientId: string) => void;
@@ -123,7 +124,7 @@ export const PatientHistoryView: React.FC<PatientHistoryViewProps> = ({ onSelect
                     <div className="truncate">
                       <div className="font-bold text-xs text-[#18212F] truncate">{p.fullName}</div>
                       <div className="text-[10px] font-mono text-[#667085]">
-                        {p.uhid} · {p.age}y/{p.gender}
+                        {p.uhid} · {getPatientAgeDisplay(p)}/{p.gender}
                       </div>
                     </div>
                   </div>
@@ -163,7 +164,7 @@ export const PatientHistoryView: React.FC<PatientHistoryViewProps> = ({ onSelect
                           {selectedPatient.uhid}
                         </span>
                         <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-neutral-100 text-neutral-700">
-                          {selectedPatient.age}y · {selectedPatient.gender}
+                          {getPatientAgeDisplay(selectedPatient)} · {selectedPatient.gender}
                         </span>
                         {selectedPatient.bloodGroup && (
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 flex items-center gap-1">
@@ -277,7 +278,7 @@ export const PatientHistoryView: React.FC<PatientHistoryViewProps> = ({ onSelect
                       <div className="flex justify-between items-start gap-2">
                         <span className="text-[#667085] shrink-0">Date of Birth:</span>
                         <span className="font-semibold text-[#18212F] text-right font-mono">
-                          {selectedPatient.dob} ({selectedPatient.age} yrs)
+                          {selectedPatient.dob || 'N/A'} ({getPatientAgeDisplay(selectedPatient)})
                         </span>
                       </div>
                       <div className="flex justify-between items-start gap-2">

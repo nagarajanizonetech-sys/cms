@@ -72,10 +72,10 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
           </button>
 
           <div className="min-w-0">
-            <h1 className="text-base sm:text-lg font-bold text-[#18212F] truncate tracking-tight">
+            <h1 className="text-lg sm:text-xl font-bold text-[#18212F] truncate tracking-tight">
               {title}
             </h1>
-            <p className="text-[11px] text-[#667085] truncate hidden sm:block">
+            <p className="text-xs text-[#667085] truncate hidden sm:block">
               {description}
             </p>
           </div>
@@ -87,14 +87,14 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
           {/* Global Quick Patient Search */}
           <div ref={searchBoxRef} className="relative hidden md:block w-64 lg:w-72">
             <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#667085]" />
+              <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#667085]" />
               <input
                 type="text"
                 placeholder="Search UHID, Patient, Mobile..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
-                className="w-full pl-8 pr-7 py-1.5 bg-[#FFF9F7] hover:bg-white focus:bg-white border border-[#F1E4E1] focus:border-[#F76762] rounded-xl text-xs text-[#18212F] transition-all focus:outline-none"
+                className="w-full pl-9 pr-7 py-2 bg-[#FFF9F7] hover:bg-white focus:bg-white border border-[#F1E4E1] focus:border-[#F76762] rounded-xl text-sm text-[#18212F] transition-all focus:outline-none"
               />
               {searchQuery && (
                 <button
@@ -123,10 +123,10 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
                     className="w-full p-2.5 text-left hover:bg-[#FFF9F7] flex items-center justify-between cursor-pointer transition-colors"
                   >
                     <div>
-                      <div className="text-xs font-bold text-[#18212F]">{p.fullName}</div>
-                      <div className="text-[10px] font-mono text-[#667085]">{p.uhid} · {p.mobile}</div>
+                      <div className="text-sm font-bold text-[#18212F]">{p.fullName}</div>
+                      <div className="text-xs font-mono text-[#667085]">{p.uhid} · {p.mobile}</div>
                     </div>
-                    <span className="text-[10px] text-[#F76762] font-semibold">View</span>
+                    <span className="text-xs text-[#F76762] font-semibold">View</span>
                   </button>
                 ))}
               </div>
@@ -134,7 +134,7 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
           </div>
 
           {/* Operational Reception Status Pill */}
-          <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-full text-[11px] font-medium font-mono">
+          <div className="hidden xl:flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-full text-xs font-medium font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span>Station #01 Online</span>
           </div>
@@ -148,7 +148,7 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
             >
               <Bell className="w-4 h-4" />
               {unreadNotifCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#F76762] text-white rounded-full text-[9px] font-bold flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#F76762] text-white rounded-full text-xs font-bold flex items-center justify-center">
                   {unreadNotifCount}
                 </span>
               )}
@@ -167,15 +167,15 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
               onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
               className="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] transition-colors cursor-pointer"
             >
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#F76762] to-[#FB866E] text-white flex items-center justify-center text-xs font-bold shrink-0">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#F76762] to-[#FB866E] text-white flex items-center justify-center text-xs font-bold shrink-0">
                 R
               </div>
               <div className="text-left hidden sm:block">
-                <div className="text-xs font-bold text-[#18212F] leading-tight flex items-center gap-1">
+                <div className="text-sm font-bold text-[#18212F] leading-tight flex items-center gap-1">
                   <span>Receptionist</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
                 </div>
-                <div className="text-[10px] text-[#667085] leading-none">
+                <div className="text-xs text-[#667085] leading-none mt-0.5">
                   Front Desk Desk #1
                 </div>
               </div>

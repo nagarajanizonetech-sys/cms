@@ -28,6 +28,7 @@ import {
 import { useReception } from '../../../context/ReceptionContext';
 import { Prescription } from '../../../types/doctor';
 import { PrescriptionA4Modal } from '../modals/PrescriptionA4Modal';
+import { getPatientAgeDisplay } from '../../../utils/validation';
 
 interface DoctorHistoryViewProps {
   initialPatientId?: string;
@@ -276,7 +277,7 @@ export const DoctorHistoryView: React.FC<DoctorHistoryViewProps> = ({
                           )}
                         </div>
                         <div className="text-[10px] font-mono text-[#667085]">
-                          {p.uhid} · {p.age}y/{p.gender}
+                          {p.uhid} · {getPatientAgeDisplay(p)}/{p.gender}
                         </div>
                       </div>
                     </div>
@@ -317,7 +318,7 @@ export const DoctorHistoryView: React.FC<DoctorHistoryViewProps> = ({
                           {activePatient.uhid}
                         </span>
                         <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-neutral-100 text-neutral-700">
-                          {activePatient.age}y · {activePatient.gender}
+                          {getPatientAgeDisplay(activePatient)} · {activePatient.gender}
                         </span>
                         {activePatient.bloodGroup && (
                           <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200 flex items-center gap-1">
@@ -457,7 +458,7 @@ export const DoctorHistoryView: React.FC<DoctorHistoryViewProps> = ({
                       <div className="flex justify-between items-start gap-2">
                         <span className="text-[#667085] shrink-0">Date of Birth:</span>
                         <span className="font-semibold text-[#18212F] text-right font-mono">
-                          {activePatient.dob} ({activePatient.age} yrs)
+                          {activePatient.dob || 'N/A'} ({getPatientAgeDisplay(activePatient)})
                         </span>
                       </div>
                       <div className="flex justify-between items-start gap-2">

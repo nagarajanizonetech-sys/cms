@@ -39,6 +39,7 @@ import {
 } from '../../../types/doctor';
 import { ServiceChargeItem, PaymentMethod, ClinicServiceName } from '../../../types/reception';
 import { PrescriptionA4Modal } from '../modals/PrescriptionA4Modal';
+import { getPatientAgeDisplay, calculateAgeFromDOB } from '../../../utils/validation';
 
 interface ConsultationWorkspaceProps {
   appointmentId: string;
@@ -245,18 +246,34 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
   // Recalculate BMI when height/weight change or clear when removed
   const handleVitalsChange = (field: keyof Vitals, rawVal: string) => {
     const trimmed = rawVal.trim();
-    const val = trimmed === '' ? undefined : parseFloat(trimmed);
-    const updated: Vitals = {
-      ...vitals,
-      [field]: val !== undefined && !isNaN(val) ? val : undefined,
-    };
-    if (updated.height && updated.weight) {
-      const hMeters = updated.height / 100;
-      updated.bmi = parseFloat((updated.weight / (hMeters * hMeters)).toFixed(1));
-    } else {
-      delete updated.bmi;
+    if (trimmed === '') {
+      const updated: Vitals = { ...vitals };
+      delete updated[field];
+      if (field === 'height' || field === 'weight') {
+        if (updated.height && updated.weight) {
+          const hMeters = updated.height / 100;
+          updated.bmi = parseFloat((updated.weight / (hMeters * hMeters)).toFixed(1));
+        } else {
+          delete updated.bmi;
+        }
+      }
+      setVitals(updated);
+      return;
     }
-    setVitals(updated);
+    const val = parseFloat(trimmed);
+    if (!isNaN(val) && val >= 0) {
+      const updated: Vitals = {
+        ...vitals,
+        [field]: val,
+      };
+      if (updated.height && updated.weight) {
+        const hMeters = updated.height / 100;
+        updated.bmi = parseFloat((updated.weight / (hMeters * hMeters)).toFixed(1));
+      } else {
+        delete updated.bmi;
+      }
+      setVitals(updated);
+    }
   };
 
   // Add Symptom
@@ -470,8 +487,9 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
       followUpNotes: followUpRequired ? followUpNotes : undefined,
     };
 
+    const effectivePatientAge = patient?.dob ? (calculateAgeFromDOB(patient.dob)?.years ?? (patient.age || 35)) : (patient?.age || 35);
     const prescriptionPayload = medicines.length > 0 ? {
-      patientAge: patient?.age || 35,
+      patientAge: effectivePatientAge,
       patientGender: patient?.gender || 'Adult',
       patientPhone: patient?.mobile || '',
       medicines,
@@ -505,7 +523,7 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
       patientId: appointment.patientId,
       patientName: appointment.patientName,
       patientUhid: appointment.patientUhid,
-      patientAge: patient?.age || 35,
+      patientAge: patient?.dob ? (calculateAgeFromDOB(patient.dob)?.years ?? (patient?.age || 35)) : (patient?.age || 35),
       patientGender: patient?.gender || 'Adult',
       patientPhone: patient?.mobile || '',
       doctorId: appointment.doctorId,
@@ -609,7 +627,7 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
               <div className="flex items-center gap-3 text-xs text-[#667085] mt-1 flex-wrap">
                 <span className="font-mono font-semibold text-[#18212F]">{patient?.uhid}</span>
                 <span>·</span>
-                <span>{patient?.age} Years · {patient?.gender}</span>
+                <span>{patient ? getPatientAgeDisplay(patient) : '--'} · {patient?.gender}</span>
                 <span>·</span>
                 <span className="flex items-center gap-1">
                   <Phone className="w-3 h-3 text-[#667085]" />

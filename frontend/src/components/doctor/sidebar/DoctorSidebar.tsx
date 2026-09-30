@@ -10,8 +10,6 @@ import {
   ChevronLeft, 
   ChevronRight, 
   Stethoscope, 
-  Settings, 
-  HelpCircle, 
   LogOut, 
   X,
   History,
@@ -157,10 +155,10 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
                 <HeartPulse className="w-4 h-4" />
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-base font-bold tracking-tight text-[#18212F] leading-tight">
+                <span className="text-lg font-bold tracking-tight text-[#18212F] leading-tight">
                   Aura<span className="text-[#F76762]">CMS</span>
                 </span>
-                <span className="text-[10px] font-semibold text-[#667085] tracking-wider uppercase">
+                <span className="text-xs font-semibold text-[#667085] tracking-wider uppercase">
                   Doctor Workstation
                 </span>
               </div>
@@ -200,7 +198,7 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
         {/* Middle: Navigation Items */}
         <div className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
           {!isCollapsed && (
-            <div className="px-3 pb-2 text-[10px] font-bold text-[#667085] tracking-wider uppercase">
+            <div className="px-3 pb-2 text-xs font-bold text-[#667085] tracking-wider uppercase">
               Clinical Navigation
             </div>
           )}
@@ -215,7 +213,7 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
                 onClick={() => handleNavClick(item.route)}
                 title={isCollapsed ? item.label : undefined}
                 className={`
-                  w-full flex items-center rounded-xl text-xs font-semibold
+                  w-full flex items-center rounded-xl text-sm font-semibold
                   transition-all duration-150 cursor-pointer group relative
                   ${isCollapsed ? 'justify-center p-3' : 'px-3 py-2.5 gap-3'}
                   ${
@@ -241,7 +239,7 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
                 {!isCollapsed && item.badge && (
                   <span
                     className={`
-                      px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0
+                      px-2 py-0.5 rounded-full text-xs font-bold shrink-0
                       ${item.badgeColor || 'bg-[#F76762]/10 text-[#F76762]'}
                     `}
                   >
@@ -258,37 +256,13 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
           })}
         </div>
 
-        {/* Bottom Section: Settings, Help & Support, Logout */}
+        {/* Bottom Section: Logout */}
         <div className="p-3 border-t border-[#F1E4E1] space-y-1">
-          <button
-            onClick={() => handleNavClick('/doctor/reports')}
-            title={isCollapsed ? 'Settings' : undefined}
-            className={`
-              w-full flex items-center rounded-xl text-xs font-medium text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7] transition-colors cursor-pointer
-              ${isCollapsed ? 'justify-center p-2.5' : 'px-3 py-2 gap-3'}
-            `}
-          >
-            <Settings className="w-4 h-4 shrink-0" />
-            {!isCollapsed && <span>Settings</span>}
-          </button>
-
-          <button
-            onClick={() => handleNavClick('/doctor/appointments')}
-            title={isCollapsed ? 'Help & Support' : undefined}
-            className={`
-              w-full flex items-center rounded-xl text-xs font-medium text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7] transition-colors cursor-pointer
-              ${isCollapsed ? 'justify-center p-2.5' : 'px-3 py-2 gap-3'}
-            `}
-          >
-            <HelpCircle className="w-4 h-4 shrink-0" />
-            {!isCollapsed && <span>Help & Support</span>}
-          </button>
-
           <button
             onClick={onLogout}
             title={isCollapsed ? 'Logout' : undefined}
             className={`
-              w-full flex items-center rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer
+              w-full flex items-center rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer
               ${isCollapsed ? 'justify-center p-2.5' : 'px-3 py-2 gap-3'}
             `}
           >

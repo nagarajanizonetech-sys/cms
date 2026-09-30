@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useReception } from '../../../context/ReceptionContext';
 import { FollowUpRecord } from '../../../types/doctor';
+import { getPatientAgeDisplay } from '../../../utils/validation';
 
 interface ReceptionFollowUpsViewProps {
   onSelectPatient: (patientId: string) => void;
@@ -108,7 +109,7 @@ export const ReceptionFollowUpsView: React.FC<ReceptionFollowUpsViewProps> = ({
         patientPhone,
         patientAddress,
         patientUhid: fu.patientUhid || patient?.uhid || 'AUR-NEW',
-        patientAge: patient?.age,
+        patientAgeDisplay: patient ? getPatientAgeDisplay(patient) : undefined,
         patientGender: patient?.gender,
         doctorName: fu.doctorName || doctor?.name || 'Assigned Doctor',
         doctorSpecialization: doctor?.specialization,
@@ -569,10 +570,10 @@ export const ReceptionFollowUpsView: React.FC<ReceptionFollowUpsViewProps> = ({
                             <span className="text-[10px] font-mono bg-neutral-100 text-neutral-700 px-1.5 py-0.5 rounded font-bold">
                               {item.patientUhid}
                             </span>
-                            {(item.patientAge || item.patientGender) && (
+                            {(item.patientAgeDisplay || item.patientGender) && (
                               <span className="text-[10px] text-[#667085]">
-                                {item.patientAge ? `${item.patientAge}y` : ''} 
-                                {item.patientAge && item.patientGender ? ' · ' : ''}
+                                {item.patientAgeDisplay ? item.patientAgeDisplay : ''} 
+                                {item.patientAgeDisplay && item.patientGender ? ' · ' : ''}
                                 {item.patientGender || ''}
                               </span>
                             )}

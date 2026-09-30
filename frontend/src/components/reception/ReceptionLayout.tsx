@@ -85,7 +85,7 @@ export const ReceptionLayout: React.FC<ReceptionLayoutProps> = ({
   const { title, description } = getHeaderInfo(currentRoute);
 
   return (
-    <div className="min-h-screen bg-[#FFF9F7] text-[#18212F] flex flex-col antialiased selection:bg-[#F76762]/20 selection:text-[#F76762]">
+    <div className="portal-scope min-h-screen bg-[#FFF9F7] text-[#18212F] flex flex-col antialiased selection:bg-[#F76762]/20 selection:text-[#F76762]">
       
       {/* Collapsible Left Sidebar */}
       <ReceptionSidebar

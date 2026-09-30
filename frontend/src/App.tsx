@@ -62,7 +62,7 @@ export default function App() {
   if (currentPath.startsWith('/doctor')) {
     if (!currentUserRole || currentUserRole !== 'doctor') {
       return (
-        <div className="min-h-screen bg-[#FFF9F7] flex items-center justify-center p-4">
+        <div className="portal-scope min-h-screen bg-[#FFF9F7] flex items-center justify-center p-4">
           <div className="bg-white p-6 rounded-2xl border border-[#F1E4E1] max-w-md w-full text-center space-y-4 shadow-sm">
             <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 mx-auto flex items-center justify-center">
               <Lock className="w-6 h-6" />
@@ -105,7 +105,7 @@ export default function App() {
   if (currentPath.startsWith('/reception')) {
     if (!currentUserRole) {
       return (
-        <div className="min-h-screen bg-[#FFF9F7] flex items-center justify-center p-4">
+        <div className="portal-scope min-h-screen bg-[#FFF9F7] flex items-center justify-center p-4">
           <div className="bg-white p-6 rounded-2xl border border-[#F1E4E1] max-w-md w-full text-center space-y-4 shadow-sm">
             <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 mx-auto flex items-center justify-center">
               <Lock className="w-6 h-6" />

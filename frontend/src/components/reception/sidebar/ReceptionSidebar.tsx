@@ -9,8 +9,6 @@ import {
   CreditCard, 
   History, 
   BarChart3, 
-  Settings, 
-  HelpCircle, 
   LogOut, 
   ChevronLeft, 
   ChevronRight,
@@ -58,7 +56,7 @@ export const ReceptionSidebar: React.FC<ReceptionSidebarProps> = ({
   };
 
   const navItemClass = (active: boolean) => `
-    flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer relative group
+    flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer relative group
     ${active 
       ? 'bg-[#F76762]/10 text-[#F76762] font-bold' 
       : 'text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7]'
@@ -100,10 +98,10 @@ export const ReceptionSidebar: React.FC<ReceptionSidebarProps> = ({
               </div>
               {!isCollapsed && (
                 <div className="min-w-0">
-                  <div className="text-sm font-extrabold tracking-tight text-[#18212F]">
+                  <div className="text-base font-extrabold tracking-tight text-[#18212F]">
                     Aura<span className="text-[#F76762]">CMS</span>
                   </div>
-                  <div className="text-[10px] text-[#667085] font-medium leading-none">
+                  <div className="text-xs text-[#667085] font-medium leading-none">
                     Clinic Management
                   </div>
                 </div>
@@ -304,28 +302,8 @@ export const ReceptionSidebar: React.FC<ReceptionSidebarProps> = ({
         {/* Bottom Utility & Logout */}
         <div className="p-3 border-t border-[#F1E4E1] space-y-1">
           <button
-            onClick={() => handleLinkClick('/reception/reports')}
-            className={`w-full ${navItemClass(false)}`}
-            title={isCollapsed ? 'Settings' : undefined}
-          >
-            <Settings className="w-4 h-4 shrink-0" />
-            {!isCollapsed && <span>Settings</span>}
-          </button>
-
-          <button
-            onClick={() => handleLinkClick('/reception/dashboard')}
-            className={`w-full ${navItemClass(false)}`}
-            title={isCollapsed ? 'Help & Support' : undefined}
-          >
-            <HelpCircle className="w-4 h-4 shrink-0" />
-            {!isCollapsed && <span>Help & Support</span>}
-          </button>
-
-          <div className="border-t border-[#F1E4E1] my-1"></div>
-
-          <button
             onClick={onLogout}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer`}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer`}
             title={isCollapsed ? 'Logout' : undefined}
           >
             <LogOut className="w-4 h-4 shrink-0" />

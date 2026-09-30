@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useReception } from '../../../context/ReceptionContext';
 import { Patient } from '../../../types/reception';
+import { getPatientAgeDisplay } from '../../../utils/validation';
 
 interface PatientDirectoryViewProps {
   onSelectPatient: (patientId: string) => void;
@@ -53,7 +54,7 @@ export const PatientDirectoryView: React.FC<PatientDirectoryViewProps> = ({
 
         <button
           onClick={onOpenRegisterModal}
-          className="px-4 py-2.5 bg-gradient-to-r from-[#F76762] to-[#FB866E] text-white rounded-xl font-semibold flex items-center justify-center gap-2 shadow-xs hover:opacity-90 transition-all cursor-pointer text-xs"
+          className="px-4 py-2.5 bg-gradient-to-r from-[#F76762] to-[#FB866E] text-white rounded-xl font-semibold flex items-center justify-center gap-2 shadow-xs hover:opacity-90 transition-all cursor-pointer text-sm"
         >
           <UserPlus className="w-4 h-4" />
           <span>Register New Patient</span>
@@ -63,23 +64,23 @@ export const PatientDirectoryView: React.FC<PatientDirectoryViewProps> = ({
       {/* Search & Filters Bar */}
       <div className="bg-white rounded-2xl border border-[#F1E4E1] p-3.5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative w-full sm:w-96">
-          <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#667085]" />
+          <Search className="w-4 h-4 absolute left-3 top-3 text-[#667085]" />
           <input
             type="text"
             placeholder="Search by UHID (e.g. AUR-2026), Name, or Mobile..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-xs text-[#18212F] focus:outline-none focus:border-[#F76762]"
+            className="w-full pl-9 pr-3 py-2 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-sm text-[#18212F] focus:outline-none focus:border-[#F76762]"
           />
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          <span className="text-[11px] text-[#667085] hidden md:inline">Gender:</span>
+          <span className="text-xs text-[#667085] hidden md:inline font-medium">Gender:</span>
           {(['All', 'Male', 'Female'] as const).map((g) => (
             <button
               key={g}
               onClick={() => setGenderFilter(g)}
-              className={`px-3 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer transition-colors ${
+              className={`px-3 py-1.5 rounded-lg border text-sm font-semibold cursor-pointer transition-colors ${
                 genderFilter === g
                   ? 'bg-[#18212F] text-white border-[#18212F]'
                   : 'bg-white text-[#667085] border-[#F1E4E1] hover:text-[#18212F]'
@@ -146,7 +147,7 @@ export const PatientDirectoryView: React.FC<PatientDirectoryViewProps> = ({
 
                     {/* Age / Gender */}
                     <td className="py-3 px-4 text-[#18212F]">
-                      {patient.age} yrs · {patient.gender}
+                      {getPatientAgeDisplay(patient)} · {patient.gender}
                     </td>
 
                     {/* Mobile */}

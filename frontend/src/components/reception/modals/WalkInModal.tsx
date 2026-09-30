@@ -2,6 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { X, Zap, Search, UserCheck, Stethoscope, CheckCircle2, AlertCircle, Plus, Clock } from 'lucide-react';
 import { useReception } from '../../../context/ReceptionContext';
 import { Patient } from '../../../types/reception';
+import { 
+  isValidIndianMobile, 
+  sanitizeMobileInput, 
+  calculateAgeFromDOB, 
+  isFutureDate, 
+  getTodayDateString, 
+  isValidPatientName,
+  getPatientAgeDisplay 
+} from '../../../utils/validation';
 
 interface WalkInModalProps {
   onClose: () => void;
@@ -27,13 +36,16 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
   const [newFirstName, setNewFirstName] = useState('');
   const [newLastName, setNewLastName] = useState('');
   const [newMobile, setNewMobile] = useState('');
+  const [newDob, setNewDob] = useState('');
   const [newAge, setNewAge] = useState<number | ''>('');
+  const [newAgeDisplay, setNewAgeDisplay] = useState('');
   const [newGender, setNewGender] = useState<'Male' | 'Female' | 'Other'>('Male');
 
   // Doctor & Visit
   const [selectedDoctorId, setSelectedDoctorId] = useState<string>(preselectedDoctorId || doctors[0]?.id || '');
   const [reason, setReason] = useState('Acute consultation / Walk-in checkup');
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -60,12 +72,61 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
     );
   }).slice(0, 5);
 
-  const selectedPatient = patients.find(p => p.id === selectedPatientId);
-  const selectedDoctor = doctors.find(d => d.id === selectedDoctorId);
+  const handleDobChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setNewDob(val);
+
+    if (!val) {
+      setNewAge('');
+      setNewAgeDisplay('');
+      setFieldErrors((prev) => {
+        const copy = { ...prev };
+        delete copy.newDob;
+        return copy;
+      });
+      return;
+    }
+
+    if (isFutureDate(val)) {
+      setFieldErrors((prev) => ({ ...prev, newDob: 'Date of birth cannot be in the future.' }));
+      setNewAge('');
+      setNewAgeDisplay('');
+      return;
+    }
+
+    const calc = calculateAgeFromDOB(val);
+    if (calc) {
+      setNewAge(calc.years);
+      setNewAgeDisplay(calc.displayText);
+      setFieldErrors((prev) => {
+        const copy = { ...prev };
+        delete copy.newDob;
+        delete copy.newAge;
+        return copy;
+      });
+    } else {
+      setFieldErrors((prev) => ({ ...prev, newDob: 'Date of birth cannot be in the future.' }));
+      setNewAge('');
+      setNewAgeDisplay('');
+    }
+  };
+
+  const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const sanitized = sanitizeMobileInput(e.target.value);
+    setNewMobile(sanitized);
+    if (sanitized.length === 10 && isValidIndianMobile(sanitized)) {
+      setFieldErrors((prev) => {
+        const copy = { ...prev };
+        delete copy.newMobile;
+        return copy;
+      });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    const newErrs: { [key: string]: string } = {};
 
     if (patientMode === 'existing' && !selectedPatientId) {
       setError('Please select an existing patient from the list, or switch to Quick Register.');
@@ -73,22 +134,36 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
     }
 
     if (patientMode === 'new') {
-      if (!newFirstName.trim()) {
-        setError('Please enter patient first name.');
-        return;
+      const cleanFirst = newFirstName.trim();
+      if (!cleanFirst) {
+        newErrs.newFirstName = 'Full name is required.';
+      } else if (!isValidPatientName(cleanFirst)) {
+        newErrs.newFirstName = 'Please enter a valid patient name.';
       }
-      if (!newMobile.trim() || newMobile.replace(/\D/g, '').length < 7) {
-        setError('Please enter a valid mobile number.');
-        return;
+
+      if (!newMobile.trim()) {
+        newErrs.newMobile = 'Phone number is required.';
+      } else if (!isValidIndianMobile(newMobile)) {
+        newErrs.newMobile = 'Enter a valid 10-digit mobile number.';
       }
+
+      if (newDob && isFutureDate(newDob)) {
+        newErrs.newDob = 'Date of birth cannot be in the future.';
+      }
+
       if (newAge === '' || Number(newAge) < 0) {
-        setError('Please enter a valid age.');
-        return;
+        newErrs.newAge = 'Age or Date of birth is required.';
       }
     }
 
     if (!selectedDoctorId) {
-      setError('Please select a consulting doctor.');
+      setError('Doctor is required.');
+      return;
+    }
+
+    if (Object.keys(newErrs).length > 0) {
+      setFieldErrors(newErrs);
+      setError(Object.values(newErrs)[0]);
       return;
     }
 
@@ -113,9 +188,9 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
             lastName: cleanLast,
             fullName: computedFullName,
             mobile: newMobile.trim(),
-            age: Number(newAge),
+            age: Number(newAge) || 0,
             gender: newGender,
-            dob: '1990-01-01',
+            dob: newDob || '1995-01-01',
             bloodGroup: 'O+',
             emergencyContact: {
               name: 'N/A',
@@ -142,7 +217,7 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
       }
     } catch (err: any) {
       setIsSubmitting(false);
-      setError(err?.message || 'Failed to register walk-in');
+      setError(err?.message || 'Failed to check in walk-in patient');
     }
   };
 
@@ -244,7 +319,7 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
 
               {selectedPatient && (
                 <div className="pt-2 border-t border-[#F1E4E1] text-[11px] text-[#18212F]">
-                  Selected: <strong>{selectedPatient.fullName}</strong> ({selectedPatient.age}y/{selectedPatient.gender}) · {selectedPatient.bloodGroup || 'Blood: N/A'}
+                  Selected: <strong>{selectedPatient.fullName}</strong> ({getPatientAgeDisplay(selectedPatient)}/{selectedPatient.gender}) · {selectedPatient.bloodGroup || 'Blood: N/A'}
                 </div>
               )}
             </div>
@@ -253,7 +328,7 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
           {/* Mode B: Quick Register New Patient */}
           {patientMode === 'new' && (
             <div className="space-y-3 bg-[#FFF9F7] p-3.5 rounded-xl border border-[#F1E4E1]">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2.5">
                 <div className="space-y-1">
                   <label className="font-semibold text-[#18212F]">First Name *</label>
                   <input
@@ -261,13 +336,27 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
                     required
                     placeholder="e.g. Maria"
                     value={newFirstName}
-                    onChange={(e) => setNewFirstName(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-[#F1E4E1] rounded-xl text-[#18212F] focus:outline-none focus:border-[#F76762]"
+                    onChange={(e) => {
+                      setNewFirstName(e.target.value);
+                      if (e.target.value.trim()) {
+                        setFieldErrors((prev) => {
+                          const copy = { ...prev };
+                          delete copy.newFirstName;
+                          return copy;
+                        });
+                      }
+                    }}
+                    className={`w-full px-3 py-2 bg-white border rounded-xl text-[#18212F] focus:outline-none transition-colors ${
+                      fieldErrors.newFirstName ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-[#F1E4E1] focus:border-[#F76762]'
+                    }`}
                   />
+                  {fieldErrors.newFirstName && (
+                    <p className="text-xs text-red-600 font-medium">{fieldErrors.newFirstName}</p>
+                  )}
                 </div>
                 <div className="space-y-1">
                   <label className="font-semibold text-[#18212F]">
-                    Last Name <span className="text-[10px] text-[#667085] font-normal">(Optional)</span>
+                    Last Name <span className="text-xs text-[#667085] font-normal">(Optional)</span>
                   </label>
                   <input
                     type="text"
@@ -277,41 +366,82 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
                     className="w-full px-3 py-2 bg-white border border-[#F1E4E1] rounded-xl text-[#18212F] focus:outline-none focus:border-[#F76762]"
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-[#18212F]">Mobile Number *</label>
+                <div className="space-y-1 col-span-2">
+                  <label className="font-semibold text-[#18212F]">Mobile Number (10 digits) *</label>
                   <input
                     type="tel"
+                    maxLength={10}
                     required
-                    placeholder="+1 (555) 000-0000"
+                    placeholder="9876543210"
                     value={newMobile}
-                    onChange={(e) => setNewMobile(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-[#F1E4E1] rounded-xl text-[#18212F] focus:outline-none focus:border-[#F76762]"
+                    onChange={handleMobileChange}
+                    className={`w-full px-3 py-2 bg-white border rounded-xl text-[#18212F] focus:outline-none transition-colors font-mono ${
+                      fieldErrors.newMobile ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-[#F1E4E1] focus:border-[#F76762]'
+                    }`}
                   />
+                  {fieldErrors.newMobile && (
+                    <p className="text-xs text-red-600 font-medium">{fieldErrors.newMobile}</p>
+                  )}
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <label className="font-semibold text-[#18212F]">Age *</label>
-                    <input
-                      type="number"
-                      required
-                      placeholder="28"
-                      value={newAge}
-                      onChange={(e) => setNewAge(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-                      className="w-full px-2 py-2 bg-white border border-[#F1E4E1] rounded-xl text-[#18212F] focus:outline-none focus:border-[#F76762]"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="font-semibold text-[#18212F]">Gender</label>
-                    <select
-                      value={newGender}
-                      onChange={(e) => setNewGender(e.target.value as any)}
-                      className="w-full px-2 py-2 bg-white border border-[#F1E4E1] rounded-xl text-[#18212F] focus:outline-none focus:border-[#F76762]"
-                    >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
+
+                {/* Date of Birth (Source of Truth) & Calculated Age */}
+                <div className="space-y-1">
+                  <label className="font-semibold text-[#18212F]">Date of Birth</label>
+                  <input
+                    type="date"
+                    max={getTodayDateString()}
+                    value={newDob}
+                    onChange={handleDobChange}
+                    className={`w-full px-2.5 py-2 bg-white border rounded-xl text-[#18212F] focus:outline-none transition-colors ${
+                      fieldErrors.newDob ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-[#F1E4E1] focus:border-[#F76762]'
+                    }`}
+                  />
+                  {fieldErrors.newDob && (
+                    <p className="text-xs text-red-600 font-medium">{fieldErrors.newDob}</p>
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-semibold text-[#18212F]">
+                    Age * {newAgeDisplay && <span className="text-xs text-[#F76762] font-semibold">(Auto)</span>}
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="125"
+                    required
+                    placeholder="e.g. 28"
+                    value={newAge}
+                    onChange={(e) => {
+                      setNewAge(e.target.value === '' ? '' : parseInt(e.target.value, 10));
+                      if (e.target.value !== '') {
+                        setFieldErrors((prev) => {
+                          const copy = { ...prev };
+                          delete copy.newAge;
+                          return copy;
+                        });
+                      }
+                    }}
+                    className={`w-full px-2 py-2 bg-white border rounded-xl text-[#18212F] focus:outline-none transition-colors ${
+                      fieldErrors.newAge ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-[#F1E4E1] focus:border-[#F76762]'
+                    }`}
+                  />
+                  {fieldErrors.newAge && (
+                    <p className="text-xs text-red-600 font-medium">{fieldErrors.newAge}</p>
+                  )}
+                </div>
+
+                <div className="space-y-1 col-span-2">
+                  <label className="font-semibold text-[#18212F]">Gender</label>
+                  <select
+                    value={newGender}
+                    onChange={(e) => setNewGender(e.target.value as any)}
+                    className="w-full px-2 py-2 bg-white border border-[#F1E4E1] rounded-xl text-[#18212F] focus:outline-none focus:border-[#F76762]"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
               </div>
             </div>
