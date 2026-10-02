@@ -145,54 +145,70 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
         `}
       >
         {/* Top: Brand Wordmark & Collapse Toggle */}
-        <div className="h-18 sm:h-20 px-4 flex items-center justify-between border-b border-[#F1E4E1]">
+        <div className={`h-18 sm:h-20 border-b border-[#F1E4E1] flex items-center transition-all ${isCollapsed ? 'justify-center px-2 relative' : 'justify-between px-4'}`}>
           {!isCollapsed && (
-            <button
-              onClick={() => handleNavClick('/doctor/dashboard')}
-              className="flex items-center gap-2.5 text-[#18212F] text-left cursor-pointer group"
-            >
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#F76762] to-[#FB866E] flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
-                <HeartPulse className="w-4 h-4" />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-lg font-bold tracking-tight text-[#18212F] leading-tight">
-                  Aura<span className="text-[#F76762]">CMS</span>
-                </span>
-                <span className="text-xs font-semibold text-[#667085] tracking-wider uppercase">
-                  Doctor Workstation
-                </span>
-              </div>
-            </button>
+            <>
+              <button
+                onClick={() => handleNavClick('/doctor/dashboard')}
+                className="flex items-center gap-2.5 text-[#18212F] text-left cursor-pointer group min-w-0"
+              >
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#F76762] to-[#FB866E] flex items-center justify-center text-white shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                  <HeartPulse className="w-5 h-5" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-base font-extrabold tracking-tight text-[#18212F] leading-tight">
+                    Aura<span className="text-[#F76762]">CMS</span>
+                  </div>
+                  <div className="text-[10.5px] font-bold tracking-wider text-[#475467] uppercase whitespace-nowrap leading-none mt-1">
+                    Doctor Workstation
+                  </div>
+                </div>
+              </button>
+
+              {/* Desktop Collapse Toggle */}
+              <button
+                onClick={onToggleCollapse}
+                className="hidden lg:flex items-center justify-center w-7 h-7 rounded-lg text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7] border border-transparent hover:border-[#F1E4E1] transition-all cursor-pointer shrink-0"
+                aria-label="Collapse sidebar"
+                title="Collapse sidebar"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+            </>
           )}
 
           {isCollapsed && (
-            <button
-              onClick={() => handleNavClick('/doctor/dashboard')}
-              className="w-10 h-10 mx-auto rounded-xl bg-gradient-to-br from-[#F76762] to-[#FB866E] flex items-center justify-center text-white shadow-xs hover:scale-105 transition-transform cursor-pointer"
-              title="AuraCMS Doctor Workstation"
-            >
-              <HeartPulse className="w-5 h-5" />
-            </button>
+            <div className="flex items-center justify-center relative w-full">
+              <button
+                onClick={() => handleNavClick('/doctor/dashboard')}
+                className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#F76762] to-[#FB866E] flex items-center justify-center text-white shadow-xs hover:scale-105 transition-transform cursor-pointer"
+                title="AuraCMS Doctor Workstation"
+              >
+                <HeartPulse className="w-5 h-5" />
+              </button>
+
+              {/* Desktop Expand Toggle */}
+              <button
+                onClick={onToggleCollapse}
+                className="hidden lg:flex absolute -right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white border border-[#F1E4E1] shadow-xs items-center justify-center text-[#667085] hover:text-[#18212F] hover:border-[#F76762] transition-all cursor-pointer z-50"
+                aria-label="Expand sidebar"
+                title="Expand sidebar"
+              >
+                <ChevronRight className="w-3 h-3" />
+              </button>
+            </div>
           )}
 
-          {/* Desktop Collapse Toggle */}
-          <button
-            onClick={onToggleCollapse}
-            className="hidden lg:flex items-center justify-center w-7 h-7 rounded-lg text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7] border border-transparent hover:border-[#F1E4E1] transition-all cursor-pointer"
-            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-          </button>
-
           {/* Mobile Close Button */}
-          <button
-            onClick={onCloseMobile}
-            className="lg:hidden p-1.5 rounded-lg text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7] cursor-pointer"
-            aria-label="Close navigation"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {!isCollapsed && (
+            <button
+              onClick={onCloseMobile}
+              className="lg:hidden p-1.5 rounded-lg text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7] cursor-pointer shrink-0"
+              aria-label="Close navigation"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         {/* Middle: Navigation Items */}

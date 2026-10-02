@@ -34,28 +34,6 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
 
   const selectedDoctor = doctors.find((d) => d.id === doctorId);
 
-  // Time slots generator (within doctor schedule e.g. 09:00 AM - 05:00 PM)
-  const timeSlots = [
-    '09:00 AM', '09:15 AM', '09:30 AM', '09:45 AM',
-    '10:00 AM', '10:15 AM', '10:30 AM', '10:45 AM',
-    '11:00 AM', '11:15 AM', '11:30 AM', '11:45 AM',
-    '12:00 PM', '12:15 PM', '12:30 PM', '12:45 PM',
-    '02:00 PM', '02:20 PM', '02:40 PM', '03:00 PM', '03:20 PM', '03:40 PM',
-    '04:00 PM', '04:20 PM', '04:40 PM', '05:00 PM'
-  ];
-
-  // Helper to parse "09:00 AM" into minutes of day
-  const parseTimeToMins = (t: string): number => {
-    const match = t.match(/(\d+):(\d+)\s*(AM|PM)/i);
-    if (!match) return 0;
-    let h = parseInt(match[1], 10);
-    const m = parseInt(match[2], 10);
-    const period = match[3].toUpperCase();
-    if (period === 'PM' && h < 12) h += 12;
-    if (period === 'AM' && h === 12) h = 0;
-    return h * 60 + m;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -83,22 +61,6 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
       }
     }
 
-    if (!time) {
-      newErrors.time = 'Appointment time is required.';
-    } else if (selectedDoctor?.schedule?.startTime && selectedDoctor?.schedule?.endTime) {
-      // Validate appointment time within doctor working hours
-      const apptMins = parseTimeToMins(time);
-      const startMins = parseTimeToMins(selectedDoctor.schedule.startTime);
-      const endMins = parseTimeToMins(selectedDoctor.schedule.endTime);
-      if (apptMins < startMins || apptMins > endMins) {
-        newErrors.time = `Appointment time must be within doctor's schedule (${selectedDoctor.schedule.startTime} – ${selectedDoctor.schedule.endTime}).`;
-      }
-    }
-
-    if (!reason.trim()) {
-      newErrors.reason = 'Chief complaint or visit reason is required.';
-    }
-
     if (Object.keys(newErrors).length > 0) {
       setFieldErrors(newErrors);
       setError(Object.values(newErrors)[0]);
@@ -114,7 +76,7 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
         date,
         time,
         type,
-        reason: reason.trim(),
+        reason: reason.trim() || 'General Consultation',
       });
 
       setIsSubmitting(false);
@@ -226,54 +188,28 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
             )}
           </div>
 
-          {/* Date & Time */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <label className="font-semibold text-sm text-[#18212F]">Appointment Date *</label>
-              <input
-                type="date"
-                required
-                value={date}
-                onChange={(e) => {
-                  setDate(e.target.value);
-                  setFieldErrors((prev) => {
-                    const copy = { ...prev };
-                    delete copy.date;
-                    return copy;
-                  });
-                }}
-                className={`w-full px-3 py-2 bg-[#FFF9F7] border rounded-xl text-sm text-[#18212F] focus:outline-none transition-colors ${
-                  fieldErrors.date ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-[#F1E4E1] focus:border-[#F76762]'
-                }`}
-              />
-              {fieldErrors.date && (
-                <p className="text-xs text-red-600 font-medium">{fieldErrors.date}</p>
-              )}
-            </div>
-            <div className="space-y-1.5">
-              <label className="font-semibold text-sm text-[#18212F]">Time Slot *</label>
-              <select
-                value={time}
-                onChange={(e) => {
-                  setTime(e.target.value);
-                  setFieldErrors((prev) => {
-                    const copy = { ...prev };
-                    delete copy.time;
-                    return copy;
-                  });
-                }}
-                className={`w-full px-3 py-2 bg-[#FFF9F7] border rounded-xl text-sm text-[#18212F] focus:outline-none transition-colors ${
-                  fieldErrors.time ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-[#F1E4E1] focus:border-[#F76762]'
-                }`}
-              >
-                {timeSlots.map((ts) => (
-                  <option key={ts} value={ts}>{ts}</option>
-                ))}
-              </select>
-              {fieldErrors.time && (
-                <p className="text-xs text-red-600 font-medium">{fieldErrors.time}</p>
-              )}
-            </div>
+          {/* Appointment Date */}
+          <div className="space-y-1.5">
+            <label className="font-semibold text-sm text-[#18212F]">Appointment Date *</label>
+            <input
+              type="date"
+              required
+              value={date}
+              onChange={(e) => {
+                setDate(e.target.value);
+                setFieldErrors((prev) => {
+                  const copy = { ...prev };
+                  delete copy.date;
+                  return copy;
+                });
+              }}
+              className={`w-full px-3 py-2 bg-[#FFF9F7] border rounded-xl text-sm text-[#18212F] focus:outline-none transition-colors ${
+                fieldErrors.date ? 'border-red-400 bg-red-50/20 focus:border-red-500' : 'border-[#F1E4E1] focus:border-[#F76762]'
+              }`}
+            />
+            {fieldErrors.date && (
+              <p className="text-xs text-red-600 font-medium">{fieldErrors.date}</p>
+            )}
           </div>
 
           {/* Appointment Type */}
@@ -299,11 +235,13 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
 
           {/* Reason / Symptoms */}
           <div className="space-y-1.5">
-            <label className="font-semibold text-sm text-[#18212F]">Chief Complaint / Visit Reason *</label>
+            <label className="font-semibold text-sm text-[#18212F] flex items-center justify-between">
+              <span>Chief Complaint / Visit Reason</span>
+              <span className="text-xs font-normal text-[#667085]">Optional</span>
+            </label>
             <textarea
-              required
               rows={2}
-              placeholder="e.g. Hypertension medication review, chronic knee pain"
+              placeholder="e.g. Hypertension medication review, chronic knee pain (optional)"
               value={reason}
               onChange={(e) => {
                 setReason(e.target.value);

@@ -58,8 +58,8 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
   }, []);
 
   return (
-    <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-[#F1E4E1] px-4 sm:px-6 py-3">
-      <div className="flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#F1E4E1] transition-all">
+      <div className="px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
         
         {/* Left Side: Mobile Hamburger & Page Context */}
         <div className="flex items-center gap-3 min-w-0">
@@ -68,38 +68,38 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
             className="lg:hidden p-2 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] text-[#18212F] cursor-pointer"
             aria-label="Toggle Navigation Sidebar"
           >
-            <Menu className="w-4 h-4" />
+            <Menu className="w-5 h-5" />
           </button>
 
-          <div className="min-w-0">
-            <h1 className="text-lg sm:text-xl font-bold text-[#18212F] truncate tracking-tight">
+          <div className="min-w-0 flex flex-col justify-center">
+            <h1 className="text-lg sm:text-xl font-bold text-[#18212F] truncate tracking-tight leading-tight">
               {title}
             </h1>
-            <p className="text-xs text-[#667085] truncate hidden sm:block">
+            <p className="text-xs text-[#667085] truncate hidden sm:block mt-0.5">
               {description}
             </p>
           </div>
         </div>
 
         {/* Right Side: Global Search, Live Status, Notification, Profile */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
           
           {/* Global Quick Patient Search */}
-          <div ref={searchBoxRef} className="relative hidden md:block w-64 lg:w-72">
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#667085]" />
+          <div ref={searchBoxRef} className="relative hidden md:block">
+            <div className={`relative flex items-center transition-all ${isSearchFocused ? 'w-64 lg:w-72' : 'w-48 lg:w-60'}`}>
+              <Search className="w-4 h-4 text-[#667085] absolute left-3 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search UHID, Patient, Mobile..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
-                className="w-full pl-9 pr-7 py-2 bg-[#FFF9F7] hover:bg-white focus:bg-white border border-[#F1E4E1] focus:border-[#F76762] rounded-xl text-sm text-[#18212F] transition-all focus:outline-none"
+                className="w-full h-10 pl-9 pr-8 bg-[#FFF9F7] hover:bg-white focus:bg-white border border-[#F1E4E1] focus:border-[#F76762] rounded-xl text-xs sm:text-sm text-[#18212F] transition-all focus:outline-none placeholder:text-[#667085]/70"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-2 text-[#667085] hover:text-[#18212F]"
+                  className="absolute right-2.5 text-[#667085] hover:text-[#18212F] p-0.5 cursor-pointer"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -108,7 +108,7 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
 
             {/* Quick Search Popover Results */}
             {isSearchFocused && searchResults.length > 0 && (
-              <div className="absolute top-10 left-0 right-0 bg-white rounded-xl border border-[#F1E4E1] shadow-xl z-50 overflow-hidden divide-y divide-[#F1E4E1] animate-in fade-in duration-150">
+              <div className="absolute top-12 left-0 right-0 bg-white rounded-xl border border-[#F1E4E1] shadow-xl z-50 overflow-hidden divide-y divide-[#F1E4E1] animate-in fade-in duration-150">
                 <div className="p-2 bg-[#FFF9F7] text-[10px] font-bold text-[#667085] uppercase tracking-wider">
                   Matching Patients
                 </div>
@@ -134,8 +134,8 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
           </div>
 
           {/* Operational Reception Status Pill */}
-          <div className="hidden xl:flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-full text-xs font-medium font-mono">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="hidden xl:inline-flex items-center gap-2 px-3 h-10 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-xs font-semibold font-mono shrink-0 whitespace-nowrap">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
             <span>Station #01 Online</span>
           </div>
 
@@ -143,13 +143,13 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
           <div className="relative">
             <button
               onClick={() => setIsNotifOpen(!isNotifOpen)}
-              className="p-2 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] text-[#18212F] relative transition-colors cursor-pointer"
+              className="relative w-10 h-10 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] hover:border-[#F76762]/30 text-[#18212F] flex items-center justify-center transition-colors cursor-pointer shrink-0"
               aria-label="View notifications"
             >
-              <Bell className="w-4 h-4" />
+              <Bell className="w-4 h-4 text-[#667085]" />
               {unreadNotifCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#F76762] text-white rounded-full text-xs font-bold flex items-center justify-center">
-                  {unreadNotifCount}
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#F76762] text-white rounded-full text-[10px] font-bold flex items-center justify-center border-2 border-white shadow-2xs">
+                  {unreadNotifCount > 99 ? '99+' : unreadNotifCount}
                 </span>
               )}
             </button>
@@ -165,21 +165,21 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
           <div ref={profileMenuRef} className="relative">
             <button
               onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-              className="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] transition-colors cursor-pointer"
+              className="flex items-center gap-2.5 h-10 px-2.5 sm:px-3 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] hover:border-[#F76762]/30 transition-colors cursor-pointer shrink-0"
             >
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#F76762] to-[#FB866E] text-white flex items-center justify-center text-xs font-bold shrink-0">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#F76762] to-[#FB866E] text-white flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs">
                 R
               </div>
-              <div className="text-left hidden sm:block">
-                <div className="text-sm font-bold text-[#18212F] leading-tight flex items-center gap-1">
+              <div className="text-left hidden sm:block whitespace-nowrap">
+                <div className="text-xs font-bold text-[#18212F] leading-tight flex items-center gap-1.5">
                   <span>Receptionist</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />
                 </div>
-                <div className="text-xs text-[#667085] leading-none mt-0.5">
-                  Front Desk Desk #1
+                <div className="text-[11px] text-[#667085] leading-none mt-0.5 font-mono">
+                  Front Desk #1
                 </div>
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-[#667085] hidden sm:block" />
+              <ChevronDown className="w-3.5 h-3.5 text-[#667085] hidden sm:block shrink-0" />
             </button>
 
             {/* Profile Menu Dropdown */}

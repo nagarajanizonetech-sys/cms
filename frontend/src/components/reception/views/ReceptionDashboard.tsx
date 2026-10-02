@@ -266,7 +266,7 @@ export const ReceptionDashboard: React.FC<ReceptionDashboardProps> = ({
               <CalendarPlus className="w-3.5 h-3.5" />
             </div>
             <div className="font-bold text-xs text-[#18212F]">New Appointment</div>
-            <div className="text-[10px] text-[#667085] mt-0.5 truncate">Schedule consultation slot</div>
+            <div className="text-[10px] text-[#667085] mt-0.5 truncate">Schedule appointment</div>
           </button>
 
           <button

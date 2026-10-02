@@ -206,7 +206,7 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ onNavigate }) 
           </div>
         </div>
 
-        {/* Card 6: Remaining Slots */}
+        {/* Card 6: Remaining Appointments */}
         <div className="p-4 bg-white rounded-2xl border border-[#F1E4E1] shadow-2xs hover:shadow-xs transition-shadow space-y-1">
           <div className="flex items-center justify-between text-[#667085]">
             <span className="text-[11px] font-semibold">Remaining</span>

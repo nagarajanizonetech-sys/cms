@@ -47,7 +47,7 @@ export const ReceptionLayout: React.FC<ReceptionLayoutProps> = ({
       case '/reception/calendar':
         return {
           title: 'Clinical Appointment Calendar',
-          description: 'Manage doctor-validated consultation slots, patient check-ins, and schedule modifications',
+          description: 'Manage scheduled consultations, patient check-ins, and appointments',
         };
       case '/reception/queue':
         return {

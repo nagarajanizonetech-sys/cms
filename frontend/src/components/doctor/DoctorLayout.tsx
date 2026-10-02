@@ -32,13 +32,13 @@ export const DoctorLayout: React.FC<DoctorLayoutProps> = ({
       case '/doctor/dashboard':
         return {
           title: "Today's Clinical Command Center",
-          description: "Patient queue, active consults, remaining slots, and priority clinical tasks",
+          description: "Patient queue, active consults, and priority clinical tasks",
         };
       case '/doctor/queue':
       case '/doctor/appointments':
         return {
           title: 'Patient Appointments & Live Queue',
-          description: 'Checked-in waiting lounge patients, scheduled time slots, and direct consultation entry',
+          description: 'Checked-in waiting lounge patients, scheduled appointments, and direct consultation entry',
         };
       case '/doctor/patients':
         return {

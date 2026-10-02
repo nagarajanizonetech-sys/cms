@@ -3,18 +3,10 @@ import {
   Menu, 
   Search, 
   Bell, 
-  User, 
   LogOut, 
-  Settings, 
-  ShieldCheck, 
   Circle,
-  HelpCircle,
-  Sparkles,
   ChevronDown,
-  X,
-  Stethoscope,
-  Activity,
-  UserCheck
+  X
 } from 'lucide-react';
 import { useReception } from '../../../context/ReceptionContext';
 import { DoctorStatus, Doctor } from '../../../types/reception';
@@ -23,11 +15,11 @@ import { getPatientAgeDisplay } from '../../../utils/validation';
 
 const FALLBACK_DOCTOR: Doctor = {
   id: '1',
-  name: 'Dr. Sarah Khan',
-  email: 'sarah.khan@auracms.com',
-  code: 'DOC-1',
-  specialization: 'General Medicine',
-  room: 'Room 101',
+  name: 'Dr. Sarah Jenkins',
+  email: 'doctor.sarah@auracms.com',
+  code: 'DOC-001',
+  specialization: 'Cardiology & General Medicine',
+  room: 'Room 102',
   status: 'Available',
   schedule: {
     days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
@@ -36,7 +28,7 @@ const FALLBACK_DOCTOR: Doctor = {
     slotDurationMins: 20,
   },
   waitingCount: 0,
-  consultationFee: 50,
+  consultationFee: 75,
 };
 
 interface DoctorHeaderProps {
@@ -113,23 +105,10 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
             <Menu className="w-5 h-5" />
           </button>
 
-          <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-[#F76762] tracking-wider uppercase flex items-center gap-1.5">
-                <Stethoscope className="w-3.5 h-3.5" />
-                <span>Doctor Workstation</span>
-              </span>
-              <span className="text-[#667085] text-xs">/</span>
-              <span className="text-xs font-semibold text-[#667085] truncate">
-                {currentDoctor?.name || 'Attending Physician'}
-              </span>
-            </div>
+          <div className="min-w-0 flex flex-col justify-center">
             <h1 className="text-lg sm:text-xl font-bold text-[#18212F] tracking-tight truncate leading-tight">
               {title}
             </h1>
-            <p className="hidden md:block text-xs text-[#667085] truncate">
-              {description}
-            </p>
           </div>
         </div>
 
@@ -146,7 +125,7 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
-                className="w-full pl-9 pr-8 py-2 bg-[#FFF9F7] hover:bg-white focus:bg-white text-sm text-[#18212F] rounded-xl border border-[#F1E4E1] focus:border-[#F76762] focus:outline-none transition-all placeholder:text-[#667085]/70"
+                className="w-full h-10 pl-9 pr-8 bg-[#FFF9F7] hover:bg-white focus:bg-white text-xs sm:text-sm text-[#18212F] rounded-xl border border-[#F1E4E1] focus:border-[#F76762] focus:outline-none transition-all placeholder:text-[#667085]/70"
               />
               {searchQuery && (
                 <button
@@ -160,7 +139,7 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
 
             {/* Quick Search Results Dropdown */}
             {isSearchFocused && searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1.5 bg-white rounded-xl border border-[#F1E4E1] shadow-xl overflow-hidden z-50 animate-in fade-in duration-150">
+              <div className="absolute top-12 left-0 right-0 mt-1 bg-white rounded-xl border border-[#F1E4E1] shadow-xl overflow-hidden z-50 animate-in fade-in duration-150">
                 <div className="p-2 border-b border-[#F1E4E1] text-[10px] font-bold text-[#667085] uppercase tracking-wider bg-[#FFF9F7]">
                   Clinical Search Results
                 </div>
@@ -191,7 +170,7 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
 
           {/* Availability Status Toggle */}
           <div className="relative">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-xs font-semibold text-[#18212F]">
+            <div className="flex items-center gap-1.5 px-3 h-10 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-xs font-semibold text-[#18212F] shrink-0">
               <Circle className={`w-2.5 h-2.5 ${getStatusColor(currentDoctor?.status)}`} />
               <select
                 value={currentDoctor?.status || 'Available'}
@@ -215,14 +194,14 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
           <div className="relative">
             <button
               onClick={() => setIsNotifOpen(!isNotifOpen)}
-              className="relative p-2.5 rounded-xl text-[#18212F] hover:bg-[#FFF9F7] border border-[#F1E4E1] hover:border-[#F76762]/30 transition-colors cursor-pointer"
+              className="relative w-10 h-10 rounded-xl text-[#18212F] hover:bg-[#FFF9F7] border border-[#F1E4E1] hover:border-[#F76762]/30 flex items-center justify-center transition-colors cursor-pointer shrink-0"
               aria-label="Doctor Notifications"
               title="Clinic Notifications"
             >
               <Bell className="w-4 h-4 text-[#667085]" />
               {unreadNotifCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#F76762] text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white">
-                  {unreadNotifCount}
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#F76762] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white shadow-2xs">
+                  {unreadNotifCount > 99 ? '99+' : unreadNotifCount}
                 </span>
               )}
             </button>
@@ -240,18 +219,18 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
           <div ref={profileMenuRef} className="relative">
             <button
               onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-              className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-xl hover:bg-[#FFF9F7] border border-transparent hover:border-[#F1E4E1] transition-all cursor-pointer"
+              className="flex items-center gap-2.5 h-10 px-2.5 sm:px-3 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] hover:border-[#F76762]/30 transition-all cursor-pointer shrink-0"
               aria-label="User profile menu"
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#F76762] to-[#FB866E] flex items-center justify-center text-white font-bold text-xs shadow-xs">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#F76762] to-[#FB866E] flex items-center justify-center text-white font-bold text-xs shadow-xs shrink-0">
                 {currentDoctor?.name ? currentDoctor.name.replace('Dr. ', '').charAt(0) : 'D'}
               </div>
-              <div className="hidden sm:flex flex-col text-left">
-                <span className="text-sm font-bold text-[#18212F] leading-tight flex items-center gap-1">
+              <div className="hidden sm:flex flex-col text-left whitespace-nowrap">
+                <span className="text-xs font-bold text-[#18212F] leading-tight flex items-center gap-1">
                   <span>{currentDoctor?.name || 'Dr. Sarah K.'}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#667085]" />
+                  <ChevronDown className="w-3.5 h-3.5 text-[#667085] shrink-0" />
                 </span>
-                <span className="text-xs text-[#667085] leading-none mt-0.5">
+                <span className="text-[11px] text-[#667085] leading-none mt-0.5 font-mono">
                   {currentDoctor?.room ? currentDoctor.room.split('·')[0].trim() : 'Room 101'}
                 </span>
               </div>
@@ -304,46 +283,13 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
                   </div>
                 </div>
 
-                <div className="py-1">
-                  <button
-                    onClick={() => {
-                      setIsProfileMenuOpen(false);
-                      onNavigate('/doctor/dashboard');
-                    }}
-                    className="w-full px-4 py-2 text-left text-xs font-medium text-[#18212F] hover:bg-[#FFF9F7] flex items-center gap-2 cursor-pointer"
-                  >
-                    <Activity className="w-3.5 h-3.5 text-[#667085]" />
-                    <span>My Daily Command Center</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsProfileMenuOpen(false);
-                      onNavigate('/doctor/appointments');
-                    }}
-                    className="w-full px-4 py-2 text-left text-xs font-medium text-[#18212F] hover:bg-[#FFF9F7] flex items-center gap-2 cursor-pointer"
-                  >
-                    <UserCheck className="w-3.5 h-3.5 text-[#667085]" />
-                    <span>Appointments & Queue ({currentDoctor?.waitingCount || 0} waiting)</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsProfileMenuOpen(false);
-                      onNavigate('/doctor/reports');
-                    }}
-                    className="w-full px-4 py-2 text-left text-xs font-medium text-[#18212F] hover:bg-[#FFF9F7] flex items-center gap-2 cursor-pointer"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-[#667085]" />
-                    <span>Doctor Clinical Reports</span>
-                  </button>
-                </div>
-
-                <div className="pt-1 border-t border-[#F1E4E1]">
+                <div className="p-1 pt-1.5">
                   <button
                     onClick={() => {
                       setIsProfileMenuOpen(false);
                       onLogout();
                     }}
-                    className="w-full px-4 py-2 text-left text-xs font-semibold text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer"
+                    className="w-full px-3 py-2 rounded-xl text-left text-xs font-semibold text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer transition-colors"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Sign Out of Doctor Workstation</span>

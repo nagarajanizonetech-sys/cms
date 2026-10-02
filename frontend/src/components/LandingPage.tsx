@@ -1,4 +1,4 @@
-import { useEffect, useState, type MouseEvent } from 'react';
+import { useEffect, useState, useRef, type MouseEvent } from 'react';
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'framer-motion';
 import {
   Activity,
@@ -549,9 +549,14 @@ export function LandingPage({ onNavigateLogin }: LandingPageProps = {}) {
   const [subscribed, setSubscribed] = useState(false);
   const reduced = useReducedMotion();
 
+  const isNavClickScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 14);
+
+      if (isNavClickScrollingRef.current) return;
 
       const scrollPos = window.scrollY + 220;
       const sections = navItems.map(([, id]) => document.getElementById(id)).filter(Boolean);
@@ -579,202 +584,216 @@ export function LandingPage({ onNavigateLogin }: LandingPageProps = {}) {
     }
   };
 
+  const handleNavClick = (e: MouseEvent, id: string) => {
+    e.preventDefault();
+    setMenuOpen(false);
+    setActiveSection(id);
+
+    isNavClickScrollingRef.current = true;
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+
+    const target = document.getElementById(id);
+    if (target) {
+      const headerOffset = 104;
+      const targetTop = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+    }
+
+    scrollTimeoutRef.current = setTimeout(() => {
+      isNavClickScrollingRef.current = false;
+    }, 800);
+  };
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#fbfaf8] font-sans text-[#202124] selection:bg-[#fb866e] selection:text-[#17181a]">
-      {/* Header with High-Contrast Navbar Links & Active Section Tracking */}
+      {/* Fixed header with rich frosted blur background on scroll */}
       <header
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled
-          ? 'border-b border-[#e8dfd8] bg-white/90 shadow-[0_10px_30px_rgba(0,0,0,.06)] backdrop-blur-md'
-          : 'bg-transparent'
+        className={`fixed inset-x-0 top-0 z-50 border-b transition-all duration-300 ${scrolled
+          ? 'border-[#e8dfd8] bg-white/95 shadow-[0_10px_30px_rgba(0,0,0,.07)] backdrop-blur-xl py-2 px-4 sm:px-6 lg:px-8'
+          : 'border-transparent bg-transparent pt-4 px-4 sm:px-6 lg:px-8'
           }`}
       >
-        <div className="mx-auto flex h-[78px] max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
-          <Brand dark={false} />
+        <div
+          className={`mx-auto max-w-7xl transition-all duration-300 ${scrolled
+            ? 'rounded-none border border-transparent bg-transparent shadow-none'
+            : 'rounded-[22px] border border-white/70 bg-white/70 shadow-[0_12px_38px_rgba(50,33,26,.07)] backdrop-blur-lg'
+            }`}
+        >
+          <div className="flex h-[64px] items-center justify-between px-3 sm:px-5">
+            <Brand dark={false} />
 
-          {/* Clearly visible dark navigation links with animated underline & active tracking */}
-          <nav className="hidden items-center gap-8 lg:flex">
-            {navItems.map(([label, id]) => {
-              const isActive = activeSection === id;
-              return (
-                <a
-                  key={id}
-                  href={`#${id}`}
-                  onClick={() => setActiveSection(id)}
-                  className={`group relative py-1 text-[13px] font-bold transition-colors ${isActive ? 'text-[#e76e58]' : 'text-[#2d2e30] hover:text-[#e76e58]'
-                    }`}
-                >
-                  {label}
-                  {/* Animated underline indicator for hover & active state */}
-                  <span
-                    className={`absolute bottom-0 left-0 h-[2.5px] rounded-full bg-gradient-to-r from-[#fb866e] to-[#e76e58] transition-all duration-300 ease-out ${isActive ? 'w-full' : 'w-0 group-hover:w-full'
-                      }`}
-                  />
-                </a>
-              );
-            })}
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <a
-              href={loginHref}
-              onClick={handleLoginClick}
-              className="hidden rounded-full bg-gradient-to-r from-[#fb866e] to-[#e76e58] px-6 py-2.5 text-xs font-bold text-white shadow-[0_6px_20px_rgba(251,134,110,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(251,134,110,0.45)] hover:brightness-105 sm:inline-flex"
-            >
-              Login
-            </a>
-            <button
-              type="button"
-              onClick={() => setMenuOpen(!menuOpen)}
-              aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#e0d6ce] bg-white text-[#202124] shadow-sm lg:hidden"
-            >
-              {menuOpen ? <X size={19} /> : <Menu size={19} />}
-            </button>
-          </div>
-        </div>
-
-        {menuOpen && (
-          <div className="border-t border-[#e8dfd8] bg-white/95 px-5 py-4 shadow-xl backdrop-blur-md lg:hidden">
-            <nav className="flex flex-col gap-1">
+            <nav className="hidden items-center gap-1 rounded-full border border-[#eadfd8]/80 bg-[#fffaf7]/70 p-1 lg:flex">
               {navItems.map(([label, id]) => {
                 const isActive = activeSection === id;
                 return (
                   <a
                     key={id}
-                    onClick={() => {
-                      setMenuOpen(false);
-                      setActiveSection(id);
-                    }}
                     href={`#${id}`}
-                    className={`rounded-xl px-3 py-3 text-sm font-bold ${isActive ? 'bg-[#fff0ec] text-[#e76e58]' : 'text-[#202124] hover:bg-[#fff0ec] hover:text-[#e76e58]'
+                    onClick={(e) => handleNavClick(e, id)}
+                    className={`relative rounded-full px-4 py-2 text-[11px] font-bold transition-colors duration-200 z-10 ${isActive ? 'text-white' : 'text-[#68605c] hover:text-[#e76e58]'
                       }`}
                   >
+                    {isActive && (
+                      <motion.span
+                        layoutId="activeNavPill"
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                        className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-[#fb866e] to-[#e87561] shadow-[0_5px_14px_rgba(232,117,97,.3)]"
+                      />
+                    )}
                     {label}
                   </a>
                 );
               })}
+            </nav>
+
+            <div className="flex items-center gap-2.5">
+              <div className="hidden items-center gap-2 rounded-full border border-[#d9eadf] bg-[#f3fbf5] px-3 py-2 text-[10px] font-bold text-[#4e956a] xl:flex">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#62c48a] opacity-70" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#62c48a]" />
+                </span>
+                Systems online
+              </div>
+              <a
+                href={loginHref}
+                onClick={handleLoginClick}
+                className="hidden items-center gap-2 rounded-full bg-gradient-to-r from-[#fb866e] to-[#e87561] px-5 py-2.5 text-xs font-bold text-white shadow-[0_7px_18px_rgba(232,117,97,.24)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(232,117,97,.34)] sm:inline-flex"
+              >
+                Login workspace <ArrowRight size={13} />
+              </a>
+              <button
+                type="button"
+                onClick={() => setMenuOpen(!menuOpen)}
+                aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-[#e0d6ce] bg-white/80 text-[#202124] shadow-sm lg:hidden"
+              >
+                {menuOpen ? <X size={18} /> : <Menu size={18} />}
+              </button>
+            </div>
+          </div>
+
+          {menuOpen && (
+            <div className="border-t border-[#eadfd8] px-4 pb-4 pt-3 lg:hidden">
+              <nav className="grid gap-1 sm:grid-cols-2">
+                {navItems.map(([label, id]) => {
+                  const isActive = activeSection === id;
+                  return (
+                    <a
+                      key={id}
+                      onClick={(e) => handleNavClick(e, id)}
+                      href={`#${id}`}
+                      className={`rounded-xl px-3 py-3 text-sm font-bold ${isActive ? 'bg-[#fff0ec] text-[#e76e58]' : 'text-[#202124] hover:bg-[#fff0ec] hover:text-[#e76e58]'}`}
+                    >
+                      {label}
+                    </a>
+                  );
+                })}
+              </nav>
               <a
                 href={loginHref}
                 onClick={(e) => {
                   setMenuOpen(false);
                   handleLoginClick(e);
                 }}
-                className="mt-2 rounded-xl bg-gradient-to-r from-[#fb866e] to-[#e76e58] px-3 py-3 text-center text-sm font-bold text-white"
+                className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#fb866e] to-[#e87561] px-3 py-3 text-sm font-bold text-white shadow-[0_8px_18px_rgba(232,117,97,.22)]"
               >
-                Login
+                Open workspace <ArrowRight size={15} />
               </a>
-            </nav>
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </header>
-
       <main>
-        {/* Senior-Dev Designed Hero Section - Perfect Viewport Center Below Navbar */}
-        <section id="home" className="relative min-h-[calc(100vh-78px)] mt-[78px] flex flex-col justify-center overflow-hidden bg-[#fffdfb] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_25%,rgba(251,134,110,.28),transparent_38%),linear-gradient(135deg,#ffffff_0%,#fff6f1_55%,#ffebd9_100%)]" />
+        {/* Editorial hero / live clinic command center */}
+        <section id="home" className="relative mt-0 min-h-[760px] overflow-hidden bg-[#f7f1ec] px-5 pb-16 pt-32 sm:px-8 lg:flex lg:min-h-[100svh] lg:h-[100svh] lg:items-center lg:px-10 lg:pb-10 lg:pt-28">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(251,134,110,.25),transparent_27%),radial-gradient(circle_at_8%_92%,rgba(244,201,133,.22),transparent_28%),linear-gradient(125deg,#fbf7f3_0%,#f7eee8_52%,#f6e4d8_100%)]" />
+          <div className="absolute -right-44 top-28 h-[620px] w-[620px] rounded-full border border-[#e9a18d]/50" />
+          <div className="absolute -right-16 top-48 h-[420px] w-[420px] rounded-full border border-dashed border-[#e9a18d]/45" />
 
-          {/* Brighter & Striking Circular Background Rings */}
-          <div className="absolute -right-28 top-8 h-[520px] w-[520px] rounded-full border-2 border-[#fb866e]/35 shadow-[0_0_40px_rgba(251,134,110,0.12)]" />
-          <div className="absolute right-[-5%] top-24 h-[380px] w-[380px] rounded-full border-2 border-dashed border-[#fb866e]/40" />
-
-          <div className="relative mx-auto my-auto grid max-w-7xl w-full items-center gap-8 lg:grid-cols-[.92fr_1.08fr] lg:gap-12">
-            {/* Left Column Content */}
+          <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[.9fr_1.1fr] lg:gap-14">
             <motion.div
               {...(reduced ? {} : { initial: 'hidden', animate: 'visible', variants: groupReveal })}
-              className="relative z-10 max-w-xl"
+              className="relative z-10 max-w-2xl"
             >
-              <motion.div variants={reveal} className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#fcd5c7] bg-white/90 px-3 py-1.5 text-[9px] font-bold uppercase tracking-[.2em] text-[#c76554] shadow-sm">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#fb866e]" /> Connected Clinic Platform
+              <motion.div variants={reveal} className="mb-7 flex flex-wrap items-center gap-2.5">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#f2c6b7] bg-white/75 px-3.5 py-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#c76554] shadow-sm backdrop-blur">
+                  <Sparkles size={12} /> Clinic OS / 01
+                </span>
+                <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#82736d]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#62c48a]" /> Built for busy care teams
+                </span>
               </motion.div>
 
-              <motion.h1 variants={reveal} className="text-[clamp(2.2rem,4.2vw,4.2rem)] font-semibold leading-[.96] tracking-[-.06em] text-[#202124]">
-                Let your team focus on <span className="text-[#e97561]">the patient.</span>
+              <motion.h1 variants={reveal} className="max-w-xl text-[clamp(2.1rem,4.0vw,4.2rem)] font-semibold leading-[.94] tracking-[-.06em] text-[#202124]">
+                The clinic,
+                <span className="relative block text-[#e87561]">
+                  in sync.
+                  <svg className="absolute -bottom-2 left-0 w-32 sm:w-44" viewBox="0 0 240 18" fill="none" aria-hidden="true">
+                    <path d="M3 12.5C58 3 148 2 237 8" stroke="#e87561" strokeWidth="4" strokeLinecap="round" />
+                  </svg>
+                </span>
               </motion.h1>
 
-              <motion.p variants={reveal} className="mt-5 max-w-lg text-sm leading-6 text-[#6f6967] sm:text-base">
-                ClinicFlow brings reception, consultation, and pharmacy into one beautifully connected system—so every visit feels clearer from the moment it begins.
+              <motion.p variants={reveal} className="mt-5 max-w-lg text-sm leading-6 text-[#675e5a] sm:text-base">
+                ClinicFlow turns every handoff into momentum—connecting reception, consultation, and pharmacy around one clear patient story.
               </motion.p>
 
-              <motion.div variants={reveal} className="mt-7 flex flex-wrap items-center gap-4">
+              <motion.div variants={reveal} className="mt-9 flex flex-wrap items-center gap-4">
                 <a
                   href={loginHref}
                   onClick={handleLoginClick}
-                  className="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-[#fb866e] to-[#e76e58] px-7 py-3.5 text-sm font-bold text-white shadow-[0_10px_25px_rgba(251,134,110,0.4)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(251,134,110,0.5)] hover:brightness-105"
+                  className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-[#fb866e] to-[#e87561] px-6 py-4 text-sm font-bold text-white shadow-[0_14px_30px_rgba(232,117,97,.28)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_36px_rgba(232,117,97,.38)]"
                 >
-                  Login to ClinicFlow <ArrowRight size={15} />
+                  Enter the workspace
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15 transition group-hover:translate-x-0.5"><ArrowRight size={14} /></span>
                 </a>
-                <a href="#workflow" className="inline-flex items-center gap-2 text-sm font-bold text-[#5e5856] transition hover:text-[#e76e58]">
-                  Follow the patient journey <ChevronRight size={15} />
+                <a href="#workflow" className="group inline-flex items-center gap-2 text-sm font-bold text-[#5e5856] transition hover:text-[#e76e58]">
+                  See how it flows <span className="transition group-hover:translate-x-1"><ChevronRight size={16} /></span>
                 </a>
               </motion.div>
 
-              <motion.div variants={reveal} className="mt-8 grid max-w-md grid-cols-3 gap-5 border-t border-[#f0ded5] pt-4">
-                <div>
-                  <p className="text-lg font-bold tracking-[-.04em] text-[#202124]">01</p>
-                  <p className="mt-0.5 text-[9px] font-bold uppercase tracking-[.13em] text-[#938883]">Reception</p>
+              <motion.div variants={reveal} className="mt-6 flex max-w-lg items-center gap-5 border-t border-[#e6d3ca] pt-5">
+                <div className="flex -space-x-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#f7eee8] bg-[#f4c9ba] text-[9px] font-bold text-[#744a42]">R</span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#f7eee8] bg-[#f2d48e] text-[9px] font-bold text-[#765a24]">D</span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#f7eee8] bg-[#d99ca1] text-[9px] font-bold text-[#70424a]">P</span>
                 </div>
-                <div>
-                  <p className="text-lg font-bold tracking-[-.04em] text-[#202124]">02</p>
-                  <p className="mt-0.5 text-[9px] font-bold uppercase tracking-[.13em] text-[#938883]">Doctor</p>
-                </div>
-                <div>
-                  <p className="text-lg font-bold tracking-[-.04em] text-[#202124]">03</p>
-                  <p className="mt-0.5 text-[9px] font-bold uppercase tracking-[.13em] text-[#938883]">Pharmacy</p>
-                </div>
+                <p className="text-[11px] font-semibold leading-4 text-[#80736d]">One connected team<br /><span className="text-[#292729]">three focused workspaces</span></p>
+                <span className="ml-auto hidden text-[10px] font-bold uppercase tracking-[.16em] text-[#9a8880] sm:block">Scroll to explore ↓</span>
               </motion.div>
             </motion.div>
 
-            {/* Right Column Lady Doctor (Clean White Studio Background) Visual Showcase */}
             <motion.div
-              initial={reduced ? false : { opacity: 0, scale: 0.94, x: 24 }}
-              animate={reduced ? {} : { opacity: 1, scale: 1, x: 0 }}
-              transition={{ duration: 0.85, delay: 0.16 }}
-              className="relative mx-auto w-full max-w-[440px] lg:max-w-none"
+              initial={reduced ? false : { opacity: 0, y: 28, scale: .96 }}
+              animate={reduced ? {} : { opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: .9, delay: .15, ease: [0.22, 1, 0.36, 1] }}
+              className="relative mx-auto w-full max-w-[560px] lg:max-w-none"
             >
-              {/* Premium Lady Doctor Portrait Frame (White & Warm Orange Clinic Background) */}
-              <div className="relative h-[330px] sm:h-[370px] lg:h-[390px] xl:h-[410px] w-full overflow-hidden rounded-[32px] border-[6px] border-white bg-[#ffffff] shadow-[0_25px_60px_rgba(251,134,110,.18)]">
-                <img
-                  src="/female_doctor_hero.jpg"
-                  alt="Professional female physician with clean white and warm orange clinic background"
-                  className="h-full w-full object-cover object-top"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#202124]/15 via-transparent to-[#fb866e]/05" />
+              <div className="relative aspect-[.92] overflow-visible lg:aspect-auto lg:h-[min(68svh,590px)]">
+                <div className="absolute inset-[8%] rounded-[42%] bg-[#f7c7b5]/45 blur-3xl" />
+                <div className="absolute inset-x-[9%] bottom-[3%] h-[48%] rounded-[50%] bg-[#bd8070]/20 blur-2xl" />
+                <div className="absolute inset-[7%] rotate-[-5deg] rounded-[38px] border border-white/80 bg-white/35 shadow-[0_30px_80px_rgba(113,69,52,.14)] backdrop-blur-sm" />
+                <div className="absolute inset-[11%] overflow-hidden rounded-[32px] border-[7px] border-white bg-[#eee0d9] shadow-[0_25px_70px_rgba(113,69,52,.2)]">
+                  <img src="/female_doctor_hero.jpg" alt="Professional female physician in a modern clinic" className="h-full w-full object-cover object-top" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#202124]/40 via-transparent to-[#fb866e]/10" />
+                </div>
+
+                <motion.div animate={reduced ? {} : { y: [0, -7, 0] }} transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }} className="absolute -right-1 top-[12%] z-20 flex items-center gap-3 rounded-2xl border border-white/80 bg-white/90 p-3 shadow-[0_18px_35px_rgba(65,39,31,.14)] backdrop-blur-xl sm:-right-5">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fff0ec] text-[#e76e58]"><Stethoscope size={18} /></span>
+                  <div><p className="text-xs font-bold text-[#202124]">Dr. Sarah K.</p><p className="mt-0.5 text-[10px] font-semibold text-[#867e7a]">Consultation room 04</p></div>
+                  <span className="h-2 w-2 rounded-full bg-[#62c48a]" />
+                </motion.div>
+
+                <motion.div animate={reduced ? {} : { y: [0, 6, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} className="absolute -bottom-2 left-0 z-20 flex items-center gap-3 rounded-2xl border border-white/80 bg-white/95 p-3 shadow-[0_18px_40px_rgba(32,33,36,.1)] backdrop-blur-xl sm:-left-5">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#f2f8e9] text-[#6d9e55]"><CheckCircle2 size={18} /></span>
+                  <div><p className="text-xs font-bold text-[#202124]">Context passed forward</p><p className="mt-0.5 text-[10px] font-semibold text-[#867e7a]">Reception → Doctor → Pharmacy</p></div>
+                </motion.div>
               </div>
-
-              {/* Floating Doctor ID Badge */}
-              <motion.div
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute -right-2 top-6 z-20 flex items-center gap-3 rounded-2xl border border-white/90 bg-white/95 p-3 shadow-[0_15px_30px_rgba(251,134,110,.18)] backdrop-blur-md"
-              >
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#fff0ec] text-[#e76e58]">
-                  <Stethoscope size={18} />
-                </span>
-                <div>
-                  <p className="text-xs font-bold text-[#202124]">Dr. Sarah K.</p>
-                  <p className="text-[10px] font-semibold text-[#867e7a]">Chief Physician • OPD</p>
-                </div>
-              </motion.div>
-
-              {/* Floating Minimal Clinic Status Badge */}
-              <motion.div
-                animate={{ y: [0, 5, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute -bottom-3 left-2 z-20 flex items-center gap-3 rounded-2xl border border-white/90 bg-white/95 p-3.5 shadow-[0_18px_40px_rgba(32,33,36,.08)] backdrop-blur-md"
-              >
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                </span>
-                <div>
-                  <p className="text-xs font-bold text-[#202124]">Live Clinic Flow</p>
-                  <p className="text-[10px] font-semibold text-[#867e7a]">Reception → Doctor → Pharmacy</p>
-                </div>
-              </motion.div>
             </motion.div>
           </div>
         </section>
-
         {/* Enhanced System Model & About Section */}
         <section id="system" className="relative overflow-hidden bg-[#faf7f4] px-5 py-24 sm:px-8 lg:px-10 lg:py-36">
           {/* Subtle Ambient Radial Glows */}
@@ -913,61 +932,6 @@ export function LandingPage({ onNavigateLogin }: LandingPageProps = {}) {
         <div className="absolute -right-20 top-10 h-64 w-64 rounded-full bg-[#f3c985]/10 blur-3xl pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl">
-          {/* Top Newsletter / Clinic Updates Banner */}
-          <div className="mb-16 overflow-hidden rounded-[28px] border border-[#f7d6cd] bg-gradient-to-r from-[#fff5f2] via-[#ffefe9] to-[#fff3ed] p-7 shadow-[0_20px_50px_rgba(251,134,110,0.08)] sm:p-10">
-            <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:items-center">
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#f8c4b6] bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[.22em] text-[#d76551] shadow-sm">
-                  <Sparkles size={12} className="text-[#e76e58]" /> Stay Updated
-                </div>
-                <h3 className="mt-3 text-2xl font-bold tracking-[-.04em] text-[#202124] sm:text-3xl">
-                  Stay connected with modern clinic innovations.
-                </h3>
-                <p className="mt-2 text-sm text-[#736a66] max-w-lg">
-                  Subscribe to receive clinic management feature additions, care relay workflow tips, and system update releases.
-                </p>
-              </div>
-
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (email.trim()) {
-                    setSubscribed(true);
-                    setEmail('');
-                    setTimeout(() => setSubscribed(false), 4000);
-                  }
-                }}
-                className="relative flex flex-col sm:flex-row gap-3"
-              >
-                <div className="relative flex-1">
-                  <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#a89d97]" />
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your clinic email address..."
-                    className="w-full rounded-full border border-[#ebd5cb] bg-white pl-11 pr-4 py-3 text-sm text-[#202124] placeholder-[#9e938e] outline-none transition focus:border-[#fb866e] focus:ring-2 focus:ring-[#fb866e]/20 shadow-sm"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#fb866e] to-[#e76e58] px-6 py-3 text-xs font-bold text-white shadow-[0_6px_20px_rgba(251,134,110,0.3)] transition hover:brightness-105 hover:shadow-[0_8px_25px_rgba(251,134,110,0.4)] active:scale-95"
-                >
-                  {subscribed ? (
-                    <>
-                      <CheckCircle2 size={15} /> Subscribed!
-                    </>
-                  ) : (
-                    <>
-                      Subscribe <ArrowRight size={14} />
-                    </>
-                  )}
-                </button>
-              </form>
-            </div>
-          </div>
-
           {/* Main 4-Column Grid */}
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8 pb-12 border-b border-[#e8dfd8]">
             {/* Col 1: Brand & Mission */}

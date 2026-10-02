@@ -1,7 +1,7 @@
 """
 Database Seed Script for AuraCMS Clinical Management System
-Populates default roles, users, doctors, patients, appointments, queue, vitals,
-consultations, prescriptions, billing, and notifications.
+Populates default roles, users (Admin, 1 Receptionist, 1 Doctor), single doctor profile,
+patients, appointments, queue, vitals, consultations, prescriptions, billing, and notifications.
 """
 from __future__ import annotations
 
@@ -41,8 +41,6 @@ def seed_database():
             ("ADMIN", "System administrator with full access"),
             ("RECEPTIONIST", "Receptionist: patient intake, appointments, queue, and billing"),
             ("DOCTOR", "Doctor: clinical consultations, diagnoses, and prescriptions"),
-            ("NURSE", "Nurse: vitals recording, patient preparation, and triage"),
-            ("PHARMACIST", "Pharmacist: prescription viewing and medication dispensing"),
         ]
         roles_by_name = {}
         for name, desc in roles_data:
@@ -54,7 +52,7 @@ def seed_database():
                 logger.info("Created role: %s", name)
             roles_by_name[name] = role
 
-        # ── 2. Users ────────────────────────────────────────────────────────
+        # ── 2. Users (Admin, 1 Receptionist, 1 Doctor) ──────────────────────
         users_data = [
             (
                 "admin",
@@ -80,38 +78,6 @@ def seed_database():
                 "+1-555-0102",
                 "DOCTOR",
             ),
-            (
-                "dr.marcus",
-                "doctor.marcus@auracms.com",
-                "doctor123",
-                "Dr. Marcus Chen",
-                "+1-555-0103",
-                "DOCTOR",
-            ),
-            (
-                "dr.elena",
-                "doctor.elena@auracms.com",
-                "doctor123",
-                "Dr. Elena Rostova",
-                "+1-555-0104",
-                "DOCTOR",
-            ),
-            (
-                "nurse",
-                "nurse@auracms.com",
-                "nurse123",
-                "Emily Clark, RN",
-                "+1-555-0105",
-                "NURSE",
-            ),
-            (
-                "pharmacist",
-                "pharma@auracms.com",
-                "pharma123",
-                "David Kim, PharmD",
-                "+1-555-0106",
-                "PHARMACIST",
-            ),
         ]
         users_by_email = {}
         for username, email, pwd, name, phone, role_name in users_data:
@@ -131,12 +97,16 @@ def seed_database():
                 logger.info("Created user: %s (%s)", email, role_name)
             users_by_email[email] = user
 
-        # ── 3. Doctors ──────────────────────────────────────────────────────
+        admin_user = users_by_email["admin@auracms.com"]
+        reception_user = users_by_email["reception@auracms.com"]
+        doctor_user = users_by_email["doctor.sarah@auracms.com"]
+
+        # ── 3. Doctor Profile (1 Doctor: Dr. Sarah Jenkins) ─────────────────
         doctors_data = [
             (
                 "doctor.sarah@auracms.com",
                 "DOC-001",
-                "Cardiology",
+                "Cardiology & General Medicine",
                 "Cardiovascular Health",
                 "Room 102",
                 75.00,
@@ -144,32 +114,6 @@ def seed_database():
                 "09:00",
                 "17:00",
                 20,
-                "Available",
-            ),
-            (
-                "doctor.marcus@auracms.com",
-                "DOC-002",
-                "Pediatrics",
-                "Child Care",
-                "Room 105",
-                60.00,
-                '["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]',
-                "09:00",
-                "16:00",
-                15,
-                "Available",
-            ),
-            (
-                "doctor.elena@auracms.com",
-                "DOC-003",
-                "General Medicine",
-                "Internal Medicine",
-                "Room 101",
-                50.00,
-                '["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]',
-                "08:30",
-                "17:30",
-                15,
                 "Available",
             ),
         ]
@@ -196,6 +140,39 @@ def seed_database():
                 db.flush()
                 logger.info("Created doctor: %s (%s)", code, spec)
             doctors_by_code[code] = doc
+
+        doc1 = doctors_by_code["DOC-001"]
+
+        # ── Clean up legacy extra doctors and extra staff users ──────────────
+        legacy_doctor_codes = ["DOC-002", "DOC-003"]
+        legacy_emails = [
+            "doctor.marcus@auracms.com",
+            "doctor.elena@auracms.com",
+            "nurse@auracms.com",
+            "pharma@auracms.com",
+        ]
+
+        extra_docs = db.query(Doctor).filter(Doctor.doctor_code.in_(legacy_doctor_codes)).all()
+        for ed in extra_docs:
+            db.query(Appointment).filter(Appointment.doctor_id == ed.id).update({Appointment.doctor_id: doc1.id})
+            db.query(QueueEntry).filter(QueueEntry.doctor_id == ed.id).update({QueueEntry.doctor_id: doc1.id})
+            db.query(Consultation).filter(Consultation.doctor_id == ed.id).update({Consultation.doctor_id: doc1.id})
+            db.query(FollowUp).filter(FollowUp.doctor_id == ed.id).update({FollowUp.doctor_id: doc1.id})
+            db.delete(ed)
+        if extra_docs:
+            db.flush()
+            logger.info("Cleaned up %d legacy doctor(s) and reassigned records to DOC-001.", len(extra_docs))
+
+        extra_users = db.query(User).filter(User.email.in_(legacy_emails)).all()
+        for eu in extra_users:
+            db.query(Vital).filter(Vital.recorded_by == eu.id).update({Vital.recorded_by: reception_user.id})
+            db.query(Bill).filter(Bill.created_by == eu.id).update({Bill.created_by: reception_user.id})
+            db.query(Payment).filter(Payment.received_by == eu.id).update({Payment.received_by: reception_user.id})
+            db.query(Notification).filter(Notification.user_id == eu.id).delete()
+            db.delete(eu)
+        if extra_users:
+            db.flush()
+            logger.info("Cleaned up %d legacy staff user(s).", len(extra_users))
 
         # ── 4. Patients ─────────────────────────────────────────────────────
         patients_data = [
@@ -286,7 +263,6 @@ def seed_database():
             ),
         ]
         patients_by_uhid = {}
-        admin_user = users_by_email["admin@auracms.com"]
         for uhid, fn, ln, gen, dob, ph, em, bg, addr, city, ec_n, ec_p, ec_r, allg, cond in patients_data:
             p = db.query(Patient).filter(Patient.uhid == uhid).first()
             if not p:
@@ -306,19 +282,16 @@ def seed_database():
                     emergency_contact_relationship=ec_r,
                     allergies=allg,
                     medical_conditions=cond,
-                    created_by=admin_user.id,
+                    created_by=reception_user.id,
                 )
                 db.add(p)
                 db.flush()
                 logger.info("Created patient: %s (%s %s)", uhid, fn, ln)
             patients_by_uhid[uhid] = p
 
-        # ── 5. Appointments for Today ───────────────────────────────────────
+        # ── 5. Appointments for Today (All for Dr. Sarah Jenkins) ───────────
         today = date.today()
         now = datetime.now(timezone.utc)
-        doc1 = doctors_by_code["DOC-001"]
-        doc2 = doctors_by_code["DOC-002"]
-        doc3 = doctors_by_code["DOC-003"]
 
         p1 = patients_by_uhid["UHID-2026-0001"]
         p2 = patients_by_uhid["UHID-2026-0002"]
@@ -328,10 +301,10 @@ def seed_database():
 
         appts_data = [
             (p1.id, doc1.id, today, "09:30", "CONSULTATION", "COMPLETED", "T-01", "Routine cardiac checkup"),
-            (p2.id, doc3.id, today, "10:15", "CONSULTATION", "IN_CONSULTATION", "T-01", "Persistent dry cough"),
-            (p3.id, doc1.id, today, "11:00", "FOLLOW_UP", "CHECKED_IN", "T-02", "BP medication evaluation"),
-            (p4.id, doc3.id, today, "11:30", "WALK_IN", "CHECKED_IN", "T-02", "Migraine and dizziness"),
-            (p5.id, doc2.id, today, "14:00", "CONSULTATION", "SCHEDULED", "T-01", "Annual pediatric wellness check"),
+            (p2.id, doc1.id, today, "10:15", "CONSULTATION", "IN_CONSULTATION", "T-02", "Persistent dry cough"),
+            (p3.id, doc1.id, today, "11:00", "FOLLOW_UP", "CHECKED_IN", "T-03", "BP medication evaluation"),
+            (p4.id, doc1.id, today, "11:30", "WALK_IN", "CHECKED_IN", "T-04", "Migraine and dizziness"),
+            (p5.id, doc1.id, today, "14:00", "CONSULTATION", "SCHEDULED", "T-05", "Annual pediatric wellness check"),
         ]
 
         created_appts = []
@@ -355,7 +328,7 @@ def seed_database():
                     status=astatus,
                     token_number=atok,
                     reason=areason,
-                    created_by=admin_user.id,
+                    created_by=reception_user.id,
                     checked_in_at=now if astatus in ["CHECKED_IN", "IN_CONSULTATION", "COMPLETED"] else None,
                 )
                 db.add(appt)
@@ -390,7 +363,7 @@ def seed_database():
                 db.add(q)
                 db.flush()
 
-        # ── 7. Vitals ───────────────────────────────────────────────────────
+        # ── 7. Vitals (Recorded by Receptionist) ─────────────────────────────
         vitals_data = [
             (p1.id, created_appts[0].id, 178.0, 82.5, 26.0, 138.0, 88.0, 74.0, 98.0, 36.8, 16.0),
             (p2.id, created_appts[1].id, 162.0, 58.0, 22.1, 118.0, 76.0, 82.0, 97.0, 37.4, 18.0),
@@ -401,7 +374,7 @@ def seed_database():
                 v = Vital(
                     patient_id=pid,
                     appointment_id=aid,
-                    recorded_by=users_by_email["nurse@auracms.com"].id,
+                    recorded_by=reception_user.id,
                     height=h,
                     weight=w,
                     bmi=bmi,
@@ -422,7 +395,7 @@ def seed_database():
             c1 = Consultation(
                 patient_id=c1_appt.patient_id,
                 appointment_id=c1_appt.id,
-                doctor_id=c1_appt.doctor_id,
+                doctor_id=doc1.id,
                 chief_complaint="Occasional chest tightness and shortness of breath during exertion",
                 clinical_notes="Patient reports mild palpitations over the past 3 weeks. No dizziness or syncope.",
                 examination_notes="Heart sounds S1 S2 regular. No murmurs. Lungs clear to auscultation bilaterally.",
@@ -445,7 +418,7 @@ def seed_database():
                 rx_number=f"RX-{today.strftime('%Y%m%d')}-00101",
                 consultation_id=c1.id,
                 patient_id=c1.patient_id,
-                doctor_id=c1.doctor_id,
+                doctor_id=doc1.id,
                 status="CREATED",
                 general_advice="Avoid excess salt and caffeine. Monitor blood pressure daily in morning.",
                 diet_and_lifestyle="DASH diet, 30 min brisk walk 5 times a week.",
@@ -499,7 +472,7 @@ def seed_database():
                 balance_amount=0.00,
                 status="PAID",
                 notes="Cardiology consultation + 12-lead ECG",
-                created_by=users_by_email["reception@auracms.com"].id,
+                created_by=reception_user.id,
             )
             db.add(bill1)
             db.flush()
@@ -515,7 +488,7 @@ def seed_database():
                 payment_method="CARD",
                 transaction_reference="TXN-984210",
                 note="Paid in full via Visa debit card",
-                received_by=users_by_email["reception@auracms.com"].id,
+                received_by=reception_user.id,
             )
             db.add(pmt1)
             db.flush()
@@ -534,7 +507,7 @@ def seed_database():
                 balance_amount=75.00,
                 status="PENDING",
                 notes="Consultation fee pending",
-                created_by=users_by_email["reception@auracms.com"].id,
+                created_by=reception_user.id,
             )
             db.add(bill2)
             db.flush()
@@ -550,7 +523,7 @@ def seed_database():
                 follow_up_date=(today + timedelta(days=21)).strftime("%Y-%m-%d"),
                 notes="Cardiac review and blood pressure medication tolerance check.",
                 status="SCHEDULED",
-                created_by=users_by_email["doctor.sarah@auracms.com"].id,
+                created_by=doctor_user.id,
             )
             db.add(fu)
             db.flush()
@@ -565,14 +538,14 @@ def seed_database():
                 "/reports",
             ),
             (
-                users_by_email["doctor.sarah@auracms.com"].id,
+                doctor_user.id,
                 "New Patient Checked In",
                 "Robert Johnson (UHID-2026-0003) is waiting in Room 102 queue.",
                 "QUEUE",
                 "/queue",
             ),
             (
-                users_by_email["reception@auracms.com"].id,
+                reception_user.id,
                 "Payment Received",
                 "Invoice INV-20260926-00101 was paid in full (₹105.00).",
                 "PAYMENT",
@@ -593,7 +566,7 @@ def seed_database():
                 )
 
         db.commit()
-        logger.info("✅ Database successfully seeded with initial clinical data!")
+        logger.info("✅ Database successfully seeded with 1 Receptionist and 1 Doctor clinical data!")
 
     except Exception as e:
         db.rollback()

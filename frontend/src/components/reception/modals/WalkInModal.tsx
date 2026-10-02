@@ -31,7 +31,8 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
   const [patientMode, setPatientMode] = useState<'existing' | 'new'>(preselectedPatientId ? 'existing' : 'existing');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPatientId, setSelectedPatientId] = useState<string>(preselectedPatientId || '');
-  
+  const selectedPatient = patients.find((p) => p.id === selectedPatientId);
+
   // For Quick New Patient
   const [newFirstName, setNewFirstName] = useState('');
   const [newLastName, setNewLastName] = useState('');
@@ -171,11 +172,12 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
 
     try {
       let result;
+      const finalReason = reason.trim() || 'General Consultation';
       if (patientMode === 'existing') {
         result = await createWalkIn({
           existingPatientId: selectedPatientId,
           doctorId: selectedDoctorId,
-          reason,
+          reason: finalReason,
         });
       } else {
         const cleanFirst = newFirstName.trim();
@@ -201,7 +203,7 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
             medicalConditions: 'None reported',
           },
           doctorId: selectedDoctorId,
-          reason,
+          reason: finalReason,
         });
       }
 
@@ -486,11 +488,13 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
 
           {/* Step 3: Visit Reason */}
           <div className="space-y-1.5">
-            <label className="font-semibold text-[#18212F]">Consultation Reason</label>
+            <label className="font-semibold text-[#18212F] flex items-center justify-between">
+              <span>Consultation Reason</span>
+              <span className="text-xs font-normal text-[#667085]">Optional</span>
+            </label>
             <input
               type="text"
-              required
-              placeholder="e.g. Fever, minor injury, prescription refill"
+              placeholder="e.g. Fever, minor injury, prescription refill (optional)"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               className="w-full px-3 py-2 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-xs text-[#18212F] focus:outline-none focus:border-[#F76762]"
@@ -516,16 +520,16 @@ export const WalkInModal: React.FC<WalkInModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 bg-white border border-[#F1E4E1] text-[#667085] hover:text-[#18212F] font-semibold rounded-xl cursor-pointer transition-colors"
+              className="px-6 py-2.5 bg-white border border-[#F1E4E1] text-[#667085] hover:text-[#18212F] font-semibold rounded-xl cursor-pointer transition-colors text-sm shrink-0"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2.5 bg-gradient-to-r from-[#F76762] to-[#FB866E] text-white font-semibold rounded-xl shadow-xs hover:opacity-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 px-4 bg-gradient-to-r from-[#F76762] to-[#FB866E] text-white font-semibold rounded-xl shadow-xs hover:opacity-95 transition-all cursor-pointer flex items-center justify-center gap-2 text-sm whitespace-nowrap"
             >
-              <Zap className="w-4 h-4" />
+              <Zap className="w-4 h-4 shrink-0" />
               <span>{isSubmitting ? 'Generating Token...' : 'Generate Token & Send to Queue'}</span>
             </button>
           </div>

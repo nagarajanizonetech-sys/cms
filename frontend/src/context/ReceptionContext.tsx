@@ -465,27 +465,10 @@ interface ReceptionContextType {
 const DEFAULT_FALLBACK_DOCTORS: Doctor[] = [
   {
     id: '1',
-    name: 'Dr. Sarah Khan',
-    email: 'sarah.khan@auracms.com',
-    code: 'DOC-1',
-    specialization: 'General Medicine & Family Practice',
-    room: 'Room 101',
-    status: 'Available',
-    schedule: {
-      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      startTime: '09:00 AM',
-      endTime: '05:00 PM',
-      slotDurationMins: 20,
-    },
-    waitingCount: 0,
-    consultationFee: 50,
-  },
-  {
-    id: '2',
-    name: 'Dr. Michael Chen',
-    email: 'michael.chen@auracms.com',
-    code: 'DOC-2',
-    specialization: 'Cardiology & Internal Medicine',
+    name: 'Dr. Sarah Jenkins',
+    email: 'doctor.sarah@auracms.com',
+    code: 'DOC-001',
+    specialization: 'Cardiology & General Medicine',
     room: 'Room 102',
     status: 'Available',
     schedule: {
@@ -495,24 +478,7 @@ const DEFAULT_FALLBACK_DOCTORS: Doctor[] = [
       slotDurationMins: 20,
     },
     waitingCount: 0,
-    consultationFee: 60,
-  },
-  {
-    id: '3',
-    name: 'Dr. Emily Taylor',
-    email: 'emily.taylor@auracms.com',
-    code: 'DOC-3',
-    specialization: 'Pediatrics & Adolescent Care',
-    room: 'Room 103',
-    status: 'Available',
-    schedule: {
-      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      startTime: '09:00 AM',
-      endTime: '05:00 PM',
-      slotDurationMins: 20,
-    },
-    waitingCount: 0,
-    consultationFee: 50,
+    consultationFee: 75,
   },
 ];
 

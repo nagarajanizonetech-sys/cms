@@ -47,6 +47,15 @@ async def lifespan(app: FastAPI):
                 logger.info("Cleaned %d patient record(s) with '.' as last_name.", updated_count)
     except Exception as e:
         logger.warning("Startup patient cleanup notice: %s", e)
+
+    # ── Automatically Load Default Seed Data on Startup ───────────────────────
+    try:
+        from app.seed import seed_database
+        seed_database()
+        logger.info("✅  Default seed data verified/loaded.")
+    except Exception as e:
+        logger.warning("Startup seed notice: %s", e)
+
     yield
     logger.info("🛑  AuraCMS backend shutting down.")
 

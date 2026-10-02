@@ -416,18 +416,6 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                   className="w-full px-3 py-2 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-xs font-semibold text-[#18212F]"
                 />
               </div>
-              <div className="space-y-1">
-                <label className="font-semibold text-[#18212F]">New Time</label>
-                <select
-                  value={newTime}
-                  onChange={(e) => setNewTime(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-xs"
-                >
-                  {['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '02:00 PM', '02:30 PM'].map(t => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
-              </div>
               <div className="flex gap-2 pt-2">
                 <button
                   type="button"

@@ -82,8 +82,8 @@ export const PatientHistoryView: React.FC<PatientHistoryViewProps> = ({ onSelect
       {/* 2-Column Layout: Left Patient Selector, Right History & Aligned Details */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         
-        {/* Left Col (Col 4): Patient Selector */}
-        <div className="lg:col-span-4 bg-white rounded-2xl border border-[#F1E4E1] p-4 shadow-xs space-y-3">
+        {/* Left Col (Col 3): Patient Selector */}
+        <div className="lg:col-span-3 bg-white rounded-2xl border border-[#F1E4E1] p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between text-xs pb-1">
             <span className="font-bold text-[#18212F]">Patient Directory</span>
             <span className="font-mono text-[10px] text-[#667085] bg-[#FFF9F7] px-2 py-0.5 rounded-md border border-[#F1E4E1]">
@@ -141,8 +141,8 @@ export const PatientHistoryView: React.FC<PatientHistoryViewProps> = ({ onSelect
           </div>
         </div>
 
-        {/* Right Col (Col 8): Aligned Overall Patient Details & Clinical Log */}
-        <div className="lg:col-span-8 space-y-5">
+        {/* Right Col (Col 9): Aligned Overall Patient Details & Clinical Log */}
+        <div className="lg:col-span-9 space-y-5">
           
           {selectedPatient ? (
             <>
@@ -257,33 +257,34 @@ export const PatientHistoryView: React.FC<PatientHistoryViewProps> = ({ onSelect
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-1">
                   
                   {/* Column 1: Personal & Demographics */}
-                  <div className="p-4 rounded-2xl bg-[#FFF9F7]/70 border border-[#F1E4E1] space-y-2.5">
+                  <div className="p-4 rounded-2xl bg-[#FFF9F7]/70 border border-[#F1E4E1] flex flex-col justify-between space-y-2.5">
                     <div className="flex items-center gap-1.5 text-xs font-bold text-[#18212F] uppercase tracking-wider border-b border-[#F1E4E1] pb-2">
                       <User className="w-3.5 h-3.5 text-[#F76762]" />
                       <span>Personal & Demographics</span>
                     </div>
                     <div className="space-y-2 text-xs">
-                      <div className="flex justify-between items-start gap-2">
-                        <span className="text-[#667085] shrink-0">Mobile Phone:</span>
-                        <a href={`tel:${selectedPatient.mobile}`} className="font-semibold text-[#18212F] hover:text-[#F76762] text-right">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] text-[#667085] shrink-0">Mobile Phone:</span>
+                        <a href={`tel:${selectedPatient.mobile}`} className="font-semibold text-[#18212F] hover:text-[#F76762] truncate">
                           {selectedPatient.mobile || 'Not provided'}
                         </a>
                       </div>
-                      <div className="flex justify-between items-start gap-2">
-                        <span className="text-[#667085] shrink-0">Email:</span>
-                        <span className="font-semibold text-[#18212F] truncate text-right">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] text-[#667085] shrink-0">Email:</span>
+                        <span className="font-semibold text-[#18212F] truncate text-right" title={selectedPatient.email || 'Not provided'}>
                           {selectedPatient.email || 'Not provided'}
                         </span>
                       </div>
-                      <div className="flex justify-between items-start gap-2">
-                        <span className="text-[#667085] shrink-0">Date of Birth:</span>
-                        <span className="font-semibold text-[#18212F] text-right font-mono">
-                          {selectedPatient.dob || 'N/A'} ({getPatientAgeDisplay(selectedPatient)})
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] text-[#667085] shrink-0">Date of Birth:</span>
+                        <span className="font-semibold text-[#18212F] text-right font-mono whitespace-nowrap">
+                          {selectedPatient.dob || 'N/A'}{' '}
+                          <span className="text-[#667085] font-normal font-sans">({getPatientAgeDisplay(selectedPatient)})</span>
                         </span>
                       </div>
-                      <div className="flex justify-between items-start gap-2">
-                        <span className="text-[#667085] shrink-0">Address & City:</span>
-                        <span className="font-semibold text-[#18212F] text-right">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] text-[#667085] shrink-0">Address & City:</span>
+                        <span className="font-semibold text-[#18212F] text-right truncate" title={selectedPatient.address ? `${selectedPatient.address}${selectedPatient.city ? `, ${selectedPatient.city}` : ''}` : (selectedPatient.city || 'Standard clinic residence')}>
                           {selectedPatient.address ? `${selectedPatient.address}${selectedPatient.city ? `, ${selectedPatient.city}` : ''}` : (selectedPatient.city || 'Standard clinic residence')}
                         </span>
                       </div>
@@ -291,18 +292,18 @@ export const PatientHistoryView: React.FC<PatientHistoryViewProps> = ({ onSelect
                   </div>
 
                   {/* Column 2: Medical Alerts & Health */}
-                  <div className="p-4 rounded-2xl bg-[#FFF9F7]/70 border border-[#F1E4E1] space-y-2.5">
+                  <div className="p-4 rounded-2xl bg-[#FFF9F7]/70 border border-[#F1E4E1] flex flex-col justify-between space-y-2.5">
                     <div className="flex items-center gap-1.5 text-xs font-bold text-[#18212F] uppercase tracking-wider border-b border-[#F1E4E1] pb-2">
                       <AlertTriangle className="w-3.5 h-3.5 text-[#F76762]" />
                       <span>Medical Alerts & Health</span>
                     </div>
-                    <div className="space-y-2.5 text-xs">
+                    <div className="space-y-2 text-xs">
                       <div>
-                        <span className="text-[#667085] block text-[11px] mb-1 font-semibold">Documented Drug Allergies:</span>
+                        <span className="text-[#667085] block text-[10px] uppercase font-bold tracking-wider mb-1">Documented Drug Allergies:</span>
                         {hasAllergies ? (
                           <div className="p-2 rounded-xl bg-red-50 border border-red-200 text-red-800 text-[11px] font-semibold flex items-center gap-1.5">
                             <AlertTriangle className="w-3.5 h-3.5 text-red-600 shrink-0" />
-                            <span>{selectedPatient.allergies}</span>
+                            <span className="truncate">{selectedPatient.allergies}</span>
                           </div>
                         ) : (
                           <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-800 text-[11px] font-medium flex items-center gap-1 border border-emerald-200">
@@ -312,11 +313,11 @@ export const PatientHistoryView: React.FC<PatientHistoryViewProps> = ({ onSelect
                         )}
                       </div>
                       <div>
-                        <span className="text-[#667085] block text-[11px] mb-1 font-semibold">Chronic Conditions:</span>
+                        <span className="text-[#667085] block text-[10px] uppercase font-bold tracking-wider mb-1">Chronic Conditions:</span>
                         {selectedPatient.medicalConditions && selectedPatient.medicalConditions.toLowerCase() !== 'none' ? (
                           <div className="p-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-semibold flex items-center gap-1.5">
                             <Heart className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                            <span>{selectedPatient.medicalConditions}</span>
+                            <span className="truncate">{selectedPatient.medicalConditions}</span>
                           </div>
                         ) : (
                           <div className="p-1.5 rounded-lg bg-neutral-100 text-neutral-700 text-[11px]">
@@ -328,33 +329,33 @@ export const PatientHistoryView: React.FC<PatientHistoryViewProps> = ({ onSelect
                   </div>
 
                   {/* Column 3: Emergency & Care Contact */}
-                  <div className="p-4 rounded-2xl bg-[#FFF9F7]/70 border border-[#F1E4E1] space-y-2.5">
+                  <div className="p-4 rounded-2xl bg-[#FFF9F7]/70 border border-[#F1E4E1] flex flex-col justify-between space-y-2.5">
                     <div className="flex items-center gap-1.5 text-xs font-bold text-[#18212F] uppercase tracking-wider border-b border-[#F1E4E1] pb-2">
                       <Repeat className="w-3.5 h-3.5 text-[#F76762]" />
                       <span>Emergency & Primary Care</span>
                     </div>
                     <div className="space-y-2 text-xs">
-                      <div className="flex justify-between items-start gap-2">
-                        <span className="text-[#667085] shrink-0">Emergency Contact:</span>
-                        <span className="font-semibold text-[#18212F] text-right">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] text-[#667085] shrink-0">Emergency Contact:</span>
+                        <span className="font-semibold text-[#18212F] truncate text-right">
                           {selectedPatient.emergencyContact?.name || 'Not specified'}
                         </span>
                       </div>
-                      <div className="flex justify-between items-start gap-2">
-                        <span className="text-[#667085] shrink-0">Relationship:</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] text-[#667085] shrink-0">Relationship:</span>
                         <span className="font-medium text-[#18212F] text-right">
                           {selectedPatient.emergencyContact?.relationship || 'Family'}
                         </span>
                       </div>
-                      <div className="flex justify-between items-start gap-2">
-                        <span className="text-[#667085] shrink-0">Emergency Phone:</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] text-[#667085] shrink-0">Emergency Phone:</span>
                         <span className="font-mono font-semibold text-[#18212F] text-right">
-                          {selectedPatient.emergencyContact?.phone || selectedPatient.mobile}
+                          {selectedPatient.emergencyContact?.phone || selectedPatient.mobile || 'N/A'}
                         </span>
                       </div>
-                      <div className="flex justify-between items-start gap-2">
-                        <span className="text-[#667085] shrink-0">Registration Center:</span>
-                        <span className="font-semibold text-[#F76762] text-right">
+                      <div className="flex items-center justify-between gap-2 pt-1 border-t border-[#F1E4E1]/80">
+                        <span className="text-[11px] text-[#667085] shrink-0">Registration Center:</span>
+                        <span className="font-semibold text-[#F76762] text-right truncate">
                           Central Clinic Desk
                         </span>
                       </div>
