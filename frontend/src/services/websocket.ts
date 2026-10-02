@@ -13,13 +13,14 @@ class RealtimeSocket {
   private isExplicitlyClosed = false;
 
   public getWsUrl(): string {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+    const isProduction = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+    const apiUrl = import.meta.env.VITE_API_URL || (isProduction ? 'https://cms-l5qy.onrender.com/api/v1' : 'http://localhost:8000/api/v1');
     try {
       const parsed = new URL(apiUrl, window.location.href);
       const protocol = parsed.protocol === 'https:' ? 'wss:' : 'ws:';
       return `${protocol}//${parsed.host}/ws`;
     } catch {
-      return 'ws://localhost:8000/ws';
+      return isProduction ? 'wss://cms-l5qy.onrender.com/ws' : 'ws://localhost:8000/ws';
     }
   }
 
