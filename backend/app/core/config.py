@@ -25,7 +25,8 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # ── CORS ──────────────────────────────────────────────────────────────
-    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
+    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000,https://cms-psi-henna.vercel.app"
+    CORS_ORIGIN_REGEX: str = r"^https:\/\/.*\.vercel\.app$"
 
     # ── Logging ───────────────────────────────────────────────────────────
     LOG_LEVEL: str = "INFO"
@@ -33,7 +34,10 @@ class Settings(BaseSettings):
 
     @property
     def cors_origins_list(self) -> List[str]:
-        return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
+        origins = [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
+        if "https://cms-psi-henna.vercel.app" not in origins:
+            origins.append("https://cms-psi-henna.vercel.app")
+        return origins
 
 
 settings = Settings()
