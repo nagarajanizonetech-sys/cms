@@ -21,4 +21,4 @@ COPY . .
 EXPOSE 8000
 
 # Use Render's PORT when available, otherwise default to 8000 locally
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
