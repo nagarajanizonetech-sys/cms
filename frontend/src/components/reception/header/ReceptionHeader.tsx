@@ -59,20 +59,20 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#F1E4E1] transition-all">
-      <div className="px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
+      <div className="px-3 sm:px-6 lg:px-8 min-h-[58px] sm:h-20 py-2 sm:py-0 flex items-center justify-between gap-2 sm:gap-4">
         
         {/* Left Side: Mobile Hamburger & Page Context */}
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
           <button
             onClick={onToggleSidebarMobile}
-            className="lg:hidden p-2 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] text-[#18212F] cursor-pointer"
+            className="lg:hidden p-1.5 sm:p-2 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] text-[#18212F] cursor-pointer shrink-0"
             aria-label="Toggle Navigation Sidebar"
           >
             <Menu className="w-5 h-5" />
           </button>
 
-          <div className="min-w-0 flex flex-col justify-center">
-            <h1 className="text-lg sm:text-xl font-bold text-[#18212F] truncate tracking-tight leading-tight">
+          <div className="min-w-0 flex-1 flex flex-col justify-center">
+            <h1 className="text-xs xs:text-sm sm:text-lg md:text-xl font-bold text-[#18212F] line-clamp-2 sm:truncate tracking-tight leading-snug sm:leading-tight break-words sm:break-normal">
               {title}
             </h1>
             <p className="text-xs text-[#667085] truncate hidden sm:block mt-0.5">
@@ -82,7 +82,7 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
         </div>
 
         {/* Right Side: Global Search, Live Status, Notification, Profile */}
-        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           
           {/* Global Quick Patient Search */}
           <div ref={searchBoxRef} className="relative hidden md:block">
@@ -143,7 +143,7 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
           <div className="relative">
             <button
               onClick={() => setIsNotifOpen(!isNotifOpen)}
-              className="relative w-10 h-10 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] hover:border-[#F76762]/30 text-[#18212F] flex items-center justify-center transition-colors cursor-pointer shrink-0"
+              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] hover:border-[#F76762]/30 text-[#18212F] flex items-center justify-center transition-colors cursor-pointer shrink-0"
               aria-label="View notifications"
             >
               <Bell className="w-4 h-4 text-[#667085]" />
@@ -165,7 +165,7 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
           <div ref={profileMenuRef} className="relative">
             <button
               onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-              className="flex items-center gap-2.5 h-10 px-2.5 sm:px-3 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] hover:border-[#F76762]/30 transition-colors cursor-pointer shrink-0"
+              className="flex items-center justify-center sm:justify-start gap-2.5 w-9 h-9 sm:w-auto sm:h-10 px-0 sm:px-3 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] hover:border-[#F76762]/30 transition-colors cursor-pointer shrink-0"
             >
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#F76762] to-[#FB866E] text-white flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs">
                 R
@@ -184,7 +184,7 @@ export const ReceptionHeader: React.FC<ReceptionHeaderProps> = ({
 
             {/* Profile Menu Dropdown */}
             {isProfileMenuOpen && (
-              <div className="absolute right-0 top-12 w-52 bg-white rounded-2xl border border-[#F1E4E1] shadow-2xl z-50 p-1.5 text-xs animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="fixed inset-x-3 top-16 sm:inset-x-auto sm:top-12 sm:absolute sm:right-0 w-auto sm:w-52 max-w-xs ml-auto bg-white rounded-2xl border border-[#F1E4E1] shadow-2xl z-50 p-1.5 text-xs animate-in fade-in slide-in-from-top-2 duration-150">
                 <div className="p-2 border-b border-[#F1E4E1] mb-1">
                   <div className="font-bold text-[#18212F]">Front Desk Operator</div>
                   <div className="text-[10px] text-[#667085]">reception@auraclinic.com</div>

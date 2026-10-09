@@ -77,12 +77,12 @@ export const DoctorFollowUpsView: React.FC<DoctorFollowUpsViewProps> = ({ onNavi
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
         {(['All', 'Today', 'Upcoming', 'Overdue'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap cursor-pointer transition-all ${
               activeTab === tab
                 ? 'bg-[#18212F] text-white shadow-xs'
                 : 'bg-white border border-[#F1E4E1] text-[#667085] hover:text-[#18212F]'
@@ -95,8 +95,8 @@ export const DoctorFollowUpsView: React.FC<DoctorFollowUpsViewProps> = ({ onNavi
 
       {/* Follow-ups Table */}
       {filteredFollowUps.length > 0 ? (
-        <div className="bg-white rounded-2xl border border-[#F1E4E1] overflow-hidden shadow-xs">
-          <table className="w-full text-left text-xs">
+        <div className="bg-white rounded-2xl border border-[#F1E4E1] overflow-x-auto shadow-xs">
+          <table className="w-full text-left text-xs min-w-[650px] sm:min-w-full">
             <thead className="bg-[#FFF9F7] text-[10px] font-bold text-[#667085] uppercase tracking-wider border-b border-[#F1E4E1]">
               <tr>
                 <th className="py-3 px-4">Due Date</th>

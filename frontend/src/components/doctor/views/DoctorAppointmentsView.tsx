@@ -305,11 +305,11 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
               ))}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="px-3 py-2 bg-white border border-[#F1E4E1] rounded-xl text-xs font-semibold text-[#18212F] focus:outline-none focus:border-[#F76762]"
+                className="w-full sm:w-auto px-3 py-2 bg-white border border-[#F1E4E1] rounded-xl text-xs font-semibold text-[#18212F] focus:outline-none focus:border-[#F76762]"
               >
                 <option value="All">All Visit Types</option>
                 <option value="New Consultation">New Consultation</option>
@@ -318,7 +318,7 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
                 <option value="Walk-in">Walk-in</option>
               </select>
 
-              <div className="relative w-52 sm:w-64">
+              <div className="relative w-full sm:w-64">
                 <Search className="w-4 h-4 text-[#667085] absolute left-3 top-2.5 pointer-events-none" />
                 <input
                   type="text"
@@ -333,8 +333,8 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
 
           {/* Appointments & Waiting Patients Table */}
           {filteredAppointments.length > 0 ? (
-            <div className="bg-white rounded-2xl border border-[#F1E4E1] overflow-hidden shadow-xs">
-              <table className="w-full text-left text-xs">
+            <div className="bg-white rounded-2xl border border-[#F1E4E1] overflow-x-auto shadow-xs">
+              <table className="w-full text-left text-xs min-w-[640px] sm:min-w-full">
                 <thead className="bg-[#FFF9F7] text-[10px] font-bold text-[#667085] uppercase tracking-wider border-b border-[#F1E4E1]">
                   <tr>
                     <th className="py-3 px-4">Token & Time</th>

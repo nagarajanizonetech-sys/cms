@@ -31,32 +31,32 @@ export const PrescriptionA4Modal: React.FC<PrescriptionA4ModalProps> = ({
       <div className="bg-[#FFF9F7] rounded-3xl border border-[#F1E4E1] shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col max-h-[92vh] print:max-h-none print:border-none print:shadow-none print:w-full print:rounded-none">
         
         {/* Top Control Bar (Hidden when printing) */}
-        <div className="px-6 py-4 bg-white border-b border-[#F1E4E1] flex items-center justify-between shrink-0 print:hidden">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#F76762] to-[#FB866E] flex items-center justify-center text-white shadow-xs">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 bg-white border-b border-[#F1E4E1] flex flex-wrap items-center justify-between gap-2.5 sm:gap-4 shrink-0 print:hidden">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#F76762] to-[#FB866E] flex items-center justify-center text-white shadow-xs shrink-0">
               <Stethoscope className="w-4 h-4" />
             </div>
-            <div>
-              <h2 className="text-sm font-bold text-[#18212F]">
-                Standardized Clinical Prescription Preview
+            <div className="min-w-0">
+              <h2 className="text-sm font-bold text-[#18212F] truncate">
+                Clinical Prescription Preview
               </h2>
-              <p className="text-[11px] text-[#667085]">
-                A4 Medical Record Format · Ready for Patient Print & Dispensing
+              <p className="text-[11px] text-[#667085] hidden xs:block">
+                A4 Medical Record Format · Ready for Print
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0 ml-auto">
             <button
               onClick={handlePrint}
-              className="px-4 py-2 bg-gradient-to-r from-[#F76762] to-[#FB866E] text-white text-xs font-semibold rounded-xl hover:opacity-95 shadow-xs flex items-center gap-1.5 cursor-pointer transition-all"
+              className="px-3.5 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-[#F76762] to-[#FB866E] text-white text-xs font-semibold rounded-xl hover:opacity-95 shadow-xs flex items-center gap-1.5 cursor-pointer transition-all"
             >
               <Printer className="w-4 h-4" />
-              <span>Print A4 Prescription</span>
+              <span>Print A4</span>
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7] rounded-xl border border-[#F1E4E1] cursor-pointer transition-colors"
+              className="p-1.5 sm:p-2 text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7] rounded-xl border border-[#F1E4E1] cursor-pointer transition-colors"
               aria-label="Close modal"
             >
               <X className="w-4 h-4" />
@@ -65,12 +65,12 @@ export const PrescriptionA4Modal: React.FC<PrescriptionA4ModalProps> = ({
         </div>
 
         {/* Scrollable Printable A4 Sheet Body */}
-        <div className="p-4 sm:p-8 overflow-y-auto flex justify-center print:p-0 print:overflow-visible">
+        <div className="p-2 sm:p-8 overflow-y-auto flex justify-center print:p-0 print:overflow-visible">
           
           {/* Real A4 Prescription Paper Card */}
           <div 
             ref={printRef}
-            className="w-full max-w-[760px] bg-white rounded-2xl border border-[#F1E4E1] p-8 sm:p-10 shadow-sm print:border-none print:shadow-none print:p-6 print:w-full text-[#18212F] relative"
+            className="w-full max-w-[760px] bg-white rounded-2xl border border-[#F1E4E1] p-4 sm:p-10 shadow-sm print:border-none print:shadow-none print:p-6 print:w-full text-[#18212F] relative"
             style={{ minHeight: '900px' }}
           >
             

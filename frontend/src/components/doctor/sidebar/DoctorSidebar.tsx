@@ -140,13 +140,13 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
           bg-white border-r border-[#F1E4E1]
           flex flex-col justify-between
           transition-all duration-300 ease-in-out
-          ${isCollapsed ? 'w-18' : 'w-64'}
+          w-72 max-w-[85vw] ${isCollapsed ? 'lg:w-18' : 'lg:w-64'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
         {/* Top: Brand Wordmark & Collapse Toggle */}
-        <div className={`h-18 sm:h-20 border-b border-[#F1E4E1] flex items-center transition-all ${isCollapsed ? 'justify-center px-2 relative' : 'justify-between px-4'}`}>
-          {!isCollapsed && (
+        <div className={`h-18 sm:h-20 border-b border-[#F1E4E1] flex items-center transition-all ${isCollapsed && !isMobileOpen ? 'justify-center px-2 relative' : 'justify-between px-4'}`}>
+          {(!isCollapsed || isMobileOpen) && (
             <>
               <button
                 onClick={() => handleNavClick('/doctor/dashboard')}
@@ -177,8 +177,8 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
             </>
           )}
 
-          {isCollapsed && (
-            <div className="flex items-center justify-center relative w-full">
+          {isCollapsed && !isMobileOpen && (
+            <div className="hidden lg:flex items-center justify-center relative w-full">
               <button
                 onClick={() => handleNavClick('/doctor/dashboard')}
                 className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#F76762] to-[#FB866E] flex items-center justify-center text-white shadow-xs hover:scale-105 transition-transform cursor-pointer"
@@ -200,20 +200,18 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
           )}
 
           {/* Mobile Close Button */}
-          {!isCollapsed && (
-            <button
-              onClick={onCloseMobile}
-              className="lg:hidden p-1.5 rounded-lg text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7] cursor-pointer shrink-0"
-              aria-label="Close navigation"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          )}
+          <button
+            onClick={onCloseMobile}
+            className="lg:hidden p-1.5 rounded-lg text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7] cursor-pointer shrink-0 ml-auto"
+            aria-label="Close navigation"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Middle: Navigation Items */}
         <div className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
-          {!isCollapsed && (
+          {(!isCollapsed || isMobileOpen) && (
             <div className="px-3 pb-2 text-xs font-bold text-[#667085] tracking-wider uppercase">
               Clinical Navigation
             </div>
@@ -222,16 +220,17 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
           {navigationItems.map((item) => {
             const active = isItemActive(item.route);
             const Icon = item.icon;
+            const showLabels = !isCollapsed || isMobileOpen;
 
             return (
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.route)}
-                title={isCollapsed ? item.label : undefined}
+                title={!showLabels ? item.label : undefined}
                 className={`
                   w-full flex items-center rounded-xl text-sm font-semibold
                   transition-all duration-150 cursor-pointer group relative
-                  ${isCollapsed ? 'justify-center p-3' : 'px-3 py-2.5 gap-3'}
+                  ${!showLabels ? 'justify-center p-3' : 'px-3 py-2.5 gap-3'}
                   ${
                     active
                       ? 'bg-[#F76762]/10 text-[#F76762] font-bold border-l-3 border-[#F76762]'
@@ -246,13 +245,13 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
                   `}
                 />
 
-                {!isCollapsed && (
+                {showLabels && (
                   <span className="truncate flex-1 text-left">
                     {item.label}
                   </span>
                 )}
 
-                {!isCollapsed && item.badge && (
+                {showLabels && item.badge && (
                   <span
                     className={`
                       px-2 py-0.5 rounded-full text-xs font-bold shrink-0
@@ -264,7 +263,7 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
                 )}
 
                 {/* Collapsed Tooltip */}
-                {isCollapsed && (
+                {!showLabels && (
                   <span className="sr-only">{item.label}</span>
                 )}
               </button>
@@ -276,14 +275,14 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
         <div className="p-3 border-t border-[#F1E4E1] space-y-1">
           <button
             onClick={onLogout}
-            title={isCollapsed ? 'Logout' : undefined}
+            title={isCollapsed && !isMobileOpen ? 'Logout' : undefined}
             className={`
               w-full flex items-center rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer
-              ${isCollapsed ? 'justify-center p-2.5' : 'px-3 py-2 gap-3'}
+              ${isCollapsed && !isMobileOpen ? 'justify-center p-2.5' : 'px-3 py-2 gap-3'}
             `}
           >
             <LogOut className="w-4 h-4 shrink-0" />
-            {!isCollapsed && <span>Sign Out</span>}
+            {(!isCollapsed || isMobileOpen) && <span>Sign Out</span>}
           </button>
         </div>
       </aside>

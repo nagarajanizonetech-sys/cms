@@ -92,12 +92,12 @@ export const DoctorChargesView: React.FC<DoctorChargesViewProps> = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-[#FFF9F7] rounded-xl border border-[#F1E4E1] text-xs">
+        <div className="flex items-center gap-3 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+          <div className="p-3 bg-[#FFF9F7] rounded-xl border border-[#F1E4E1] text-xs flex-1 sm:flex-initial">
             <span className="text-[#667085] text-[10px] uppercase font-bold block">Total Collected:</span>
             <span className="font-bold text-[#18212F] text-base font-mono">₹{totalCollected.toFixed(2)}</span>
           </div>
-          <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-200 text-xs">
+          <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-200 text-xs flex-1 sm:flex-initial">
             <span className="text-amber-800 text-[10px] uppercase font-bold block">Pending at Reception:</span>
             <span className="font-bold text-amber-900 text-base font-mono">₹{totalPending.toFixed(2)}</span>
           </div>
@@ -136,8 +136,8 @@ export const DoctorChargesView: React.FC<DoctorChargesViewProps> = () => {
 
       {/* Charges Table */}
       {filteredBills.length > 0 ? (
-        <div className="bg-white rounded-2xl border border-[#F1E4E1] overflow-hidden shadow-xs">
-          <table className="w-full text-left text-xs">
+        <div className="bg-white rounded-2xl border border-[#F1E4E1] overflow-x-auto shadow-xs">
+          <table className="w-full text-left text-xs min-w-[700px] sm:min-w-full">
             <thead className="bg-[#FFF9F7] text-[10px] font-bold text-[#667085] uppercase tracking-wider border-b border-[#F1E4E1]">
               <tr>
                 <th className="py-3 px-4">Invoice / Date</th>

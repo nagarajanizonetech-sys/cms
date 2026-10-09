@@ -82,21 +82,21 @@ export const ReceptionSidebar: React.FC<ReceptionSidebarProps> = ({
       <aside
         className={`
           fixed top-0 bottom-0 left-0 z-40 bg-white border-r border-[#F1E4E1] flex flex-col justify-between transition-all duration-300 ease-in-out
-          ${isCollapsed ? 'w-18' : 'w-64'}
+          w-72 max-w-[85vw] ${isCollapsed ? 'lg:w-18' : 'lg:w-64'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
         {/* Top Header & Logo */}
         <div>
-          <div className="h-16 px-4 border-b border-[#F1E4E1] flex items-center justify-between">
+          <div className={`h-16 px-4 border-b border-[#F1E4E1] flex items-center transition-all ${isCollapsed && !isMobileOpen ? 'justify-center' : 'justify-between'}`}>
             <div 
               onClick={() => handleLinkClick('/reception/dashboard')}
-              className={`flex items-center gap-2.5 cursor-pointer ${isCollapsed ? 'justify-center w-full' : ''}`}
+              className={`flex items-center gap-2.5 cursor-pointer ${isCollapsed && !isMobileOpen ? 'justify-center w-full' : ''}`}
             >
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#F76762] to-[#FB866E] flex items-center justify-center text-white shrink-0 shadow-xs">
                 <Stethoscope className="w-4 h-4" />
               </div>
-              {!isCollapsed && (
+              {(!isCollapsed || isMobileOpen) && (
                 <div className="min-w-0">
                   <div className="text-base font-extrabold tracking-tight text-[#18212F]">
                     Aura<span className="text-[#F76762]">CMS</span>
@@ -120,7 +120,7 @@ export const ReceptionSidebar: React.FC<ReceptionSidebarProps> = ({
             {/* Mobile Close Button */}
             <button
               onClick={onCloseMobile}
-              className="lg:hidden p-1.5 text-[#667085] hover:text-[#18212F] cursor-pointer"
+              className="lg:hidden p-1.5 text-[#667085] hover:text-[#18212F] cursor-pointer ml-auto"
             >
               <X className="w-4 h-4" />
             </button>

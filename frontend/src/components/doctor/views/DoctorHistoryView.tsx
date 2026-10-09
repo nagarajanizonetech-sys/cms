@@ -322,7 +322,7 @@ export const DoctorHistoryView: React.FC<DoctorHistoryViewProps> = ({
                     </div>
                     <div className="space-y-1.5 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h2 className="text-xl sm:text-2xl font-black text-[#18212F] tracking-tight capitalize whitespace-nowrap">
+                        <h2 className="text-lg sm:text-2xl font-black text-[#18212F] tracking-tight capitalize break-words sm:whitespace-nowrap">
                           {activePatient.fullName}
                         </h2>
                         <span className="px-2.5 py-0.5 rounded-lg text-xs font-mono font-bold bg-[#F76762]/10 text-[#F76762] border border-[#F76762]/20 whitespace-nowrap shrink-0">
