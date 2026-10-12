@@ -82,7 +82,7 @@ export const ReceptionSidebar: React.FC<ReceptionSidebarProps> = ({
       <aside
         className={`
           fixed top-0 bottom-0 left-0 z-40 bg-white border-r border-[#F1E4E1] flex flex-col justify-between transition-all duration-300 ease-in-out
-          w-72 max-w-[85vw] ${isCollapsed ? 'lg:w-18' : 'lg:w-64'}
+          w-72 max-w-[85vw] ${isCollapsed ? 'lg:w-18' : 'lg:w-72'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >

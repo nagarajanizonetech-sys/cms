@@ -132,3 +132,121 @@
   font-size: 12px !important;
 }
 
+/* ============================================================
+   Print Media Styling & Formatting
+   Fixes modal bleed-through, multi-page duplication & misalignment
+   ============================================================ */
+@media print {
+  @page {
+    size: portrait;
+    margin: 8mm 10mm;
+  }
+
+  /* When printing from an active modal, completely hide the application root */
+  body.print-modal-active #root {
+    display: none !important;
+  }
+
+  body.print-modal-active {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #18212F !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Reset Backdrop: no fixed viewport pinning, no centering, no dark blur */
+  .receipt-print-backdrop,
+  .prescription-print-backdrop {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    overflow: visible !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* Reset Modal Card: no popup borders, no drop shadow, no max height */
+  .receipt-print-card,
+  .prescription-print-card {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* Receipt Paper Container: elegant official voucher, exactly 1 sheet */
+  .receipt-print-sheet {
+    display: block !important;
+    width: 100% !important;
+    max-width: 580px !important;
+    margin: 0 auto !important;
+    padding: 20px 24px !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    box-shadow: none !important;
+    border: 1px solid #E5E7EB !important;
+    border-radius: 10px !important;
+    overflow: visible !important;
+    max-height: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Prescription A4 Paper Container */
+  .prescription-print-sheet {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Universal hide utility for print */
+  .print\:hidden,
+  [class*="print:hidden"] {
+    display: none !important;
+  }
+}
+
+

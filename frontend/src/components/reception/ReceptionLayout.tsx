@@ -104,7 +104,7 @@ export const ReceptionLayout: React.FC<ReceptionLayoutProps> = ({
       <div 
         className={`
           flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out
-          ${isSidebarCollapsed ? 'lg:pl-18' : 'lg:pl-64'}
+          ${isSidebarCollapsed ? 'lg:pl-18' : 'lg:pl-72'}
         `}
       >
         {/* Top Header */}

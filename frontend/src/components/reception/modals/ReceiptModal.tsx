@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Printer, X, CheckCircle2, Stethoscope, FileText, Download } from 'lucide-react';
 import { Bill, PaymentRecord, ServiceChargeItem } from '../../../types/reception';
 
@@ -9,13 +10,27 @@ interface ReceiptModalProps {
 }
 
 export const ReceiptModal: React.FC<ReceiptModalProps> = ({ bill, payment, onClose }) => {
+  useEffect(() => {
+    document.body.classList.add('print-modal-active');
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.classList.remove('print-modal-active');
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
+
   const handlePrint = () => {
     window.print();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#18212F]/50 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl border border-[#F1E4E1] shadow-2xl max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh]">
+  const modalContent = (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#18212F]/50 backdrop-blur-xs animate-in fade-in duration-200 receipt-print-backdrop">
+      <div className="bg-white rounded-2xl border border-[#F1E4E1] shadow-2xl max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh] receipt-print-card">
         
         {/* Modal Action Header (Non-printable controls) */}
         <div className="p-4 border-b border-[#F1E4E1] flex items-center justify-between bg-[#FFF9F7] print:hidden">
@@ -46,7 +61,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ bill, payment, onClo
         </div>
 
         {/* Printable Receipt Paper Container */}
-        <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-[#18212F] print:p-0">
+        <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-[#18212F] receipt-print-sheet">
           
           {/* Clinic Header */}
           <div className="flex justify-between items-start border-b border-[#F1E4E1] pb-5">
@@ -180,4 +195,8 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ bill, payment, onClo
       </div>
     </div>
   );
+
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(modalContent, document.body);
 };

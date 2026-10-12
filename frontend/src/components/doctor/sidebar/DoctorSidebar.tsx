@@ -140,7 +140,7 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
           bg-white border-r border-[#F1E4E1]
           flex flex-col justify-between
           transition-all duration-300 ease-in-out
-          w-72 max-w-[85vw] ${isCollapsed ? 'lg:w-18' : 'lg:w-64'}
+          w-72 max-w-[85vw] ${isCollapsed ? 'lg:w-18' : 'lg:w-72'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
@@ -246,7 +246,7 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
                 />
 
                 {showLabels && (
-                  <span className="truncate flex-1 text-left">
+                  <span className="flex-1 text-left whitespace-nowrap min-w-0">
                     {item.label}
                   </span>
                 )}
@@ -254,7 +254,7 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
                 {showLabels && item.badge && (
                   <span
                     className={`
-                      px-2 py-0.5 rounded-full text-xs font-bold shrink-0
+                      px-2 py-0.5 rounded-full text-[11px] font-bold shrink-0 whitespace-nowrap ml-1.5
                       ${item.badgeColor || 'bg-[#F76762]/10 text-[#F76762]'}
                     `}
                   >

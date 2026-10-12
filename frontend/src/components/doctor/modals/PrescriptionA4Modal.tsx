@@ -1,4 +1,5 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Printer, Stethoscope, Download, CheckCircle2, ShieldCheck, Plus } from 'lucide-react';
 import { Prescription } from '../../../types/doctor';
 import { useReception } from '../../../context/ReceptionContext';
@@ -17,6 +18,21 @@ export const PrescriptionA4Modal: React.FC<PrescriptionA4ModalProps> = ({
   const { printPrescription } = useReception();
   const printRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (!isOpen || !prescription) return;
+    document.body.classList.add('print-modal-active');
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.classList.remove('print-modal-active');
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, prescription, onClose]);
+
   if (!isOpen || !prescription) return null;
 
   const handlePrint = () => {
@@ -24,11 +40,11 @@ export const PrescriptionA4Modal: React.FC<PrescriptionA4ModalProps> = ({
     window.print();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#18212F]/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 print:p-0 print:bg-white animate-in fade-in duration-150">
+  const modalContent = (
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#18212F]/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 print:p-0 print:bg-white animate-in fade-in duration-150 prescription-print-backdrop">
       
       {/* Modal Dialog Container */}
-      <div className="bg-[#FFF9F7] rounded-3xl border border-[#F1E4E1] shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col max-h-[92vh] print:max-h-none print:border-none print:shadow-none print:w-full print:rounded-none">
+      <div className="bg-[#FFF9F7] rounded-3xl border border-[#F1E4E1] shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col max-h-[92vh] print:max-h-none print:border-none print:shadow-none print:w-full print:rounded-none prescription-print-card">
         
         {/* Top Control Bar (Hidden when printing) */}
         <div className="px-4 sm:px-6 py-3 sm:py-4 bg-white border-b border-[#F1E4E1] flex flex-wrap items-center justify-between gap-2.5 sm:gap-4 shrink-0 print:hidden">
@@ -70,7 +86,7 @@ export const PrescriptionA4Modal: React.FC<PrescriptionA4ModalProps> = ({
           {/* Real A4 Prescription Paper Card */}
           <div 
             ref={printRef}
-            className="w-full max-w-[760px] bg-white rounded-2xl border border-[#F1E4E1] p-4 sm:p-10 shadow-sm print:border-none print:shadow-none print:p-6 print:w-full text-[#18212F] relative"
+            className="w-full max-w-[760px] bg-white rounded-2xl border border-[#F1E4E1] p-4 sm:p-10 shadow-sm print:border-none print:shadow-none print:p-6 print:w-full text-[#18212F] relative prescription-print-sheet"
             style={{ minHeight: '900px' }}
           >
             
@@ -262,4 +278,8 @@ export const PrescriptionA4Modal: React.FC<PrescriptionA4ModalProps> = ({
 
     </div>
   );
+
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(modalContent, document.body);
 };
