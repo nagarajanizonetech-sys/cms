@@ -585,15 +585,15 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       read: false,
       linkRoute,
     };
-    setNotifications(prev => [newNotif, ...prev]);
-
-    // Dispatch asynchronous backend persistence
-    api.createNotification({
-      title,
-      message,
-      type: type.toUpperCase(),
-      link_route: linkRoute,
-    }).catch(err => console.debug('Async notification sync notice:', err));
+    // Dispatch asynchronous backend persistence if authenticated
+    if (api.isAuthenticated()) {
+      api.createNotification({
+        title,
+        message,
+        type: type.toUpperCase(),
+        link_route: linkRoute,
+      }).catch(err => console.debug('Async notification sync notice:', err));
+    }
   };
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -601,6 +601,11 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   // ─────────────────────────────────────────────────────────────────────────────
 
   const refreshData = useCallback(async () => {
+    // Prevent unauthenticated calls on landing page or before login
+    if (!api.isAuthenticated()) {
+      return;
+    }
+
     try {
       // 1. Fetch doctors
       const docsRes = await api.listDoctors().catch(() => null);
@@ -671,6 +676,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // Granular live refresh handlers triggered by WebSocket events
   const refreshQueue = useCallback(async () => {
+    if (!api.isAuthenticated()) return;
     const queueRes = await api.listQueue({}).catch(() => null);
     if (queueRes && Array.isArray(queueRes.entries)) {
       setQueues(queueRes.entries.map(mapBackendQueue));
@@ -678,6 +684,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []);
 
   const refreshAppointments = useCallback(async () => {
+    if (!api.isAuthenticated()) return;
     const apptsRes = await api.listAppointments({}).catch(() => null);
     if (apptsRes && Array.isArray(apptsRes.appointments)) {
       setAppointments(apptsRes.appointments.map(mapBackendAppointment));
@@ -685,6 +692,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []);
 
   const refreshPatients = useCallback(async () => {
+    if (!api.isAuthenticated()) return;
     const ptsRes = await api.listPatients({ limit: 200 }).catch(() => null);
     if (ptsRes && Array.isArray(ptsRes.patients)) {
       setPatients(ptsRes.patients.map(mapBackendPatient));
@@ -692,6 +700,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []);
 
   const refreshBills = useCallback(async () => {
+    if (!api.isAuthenticated()) return;
     const billsRes = await api.listBills({}).catch(() => null);
     if (billsRes && Array.isArray(billsRes.bills)) {
       setBills(billsRes.bills.map(mapBackendBill));
@@ -699,6 +708,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []);
 
   const refreshConsultations = useCallback(async () => {
+    if (!api.isAuthenticated()) return;
     const consRes = await api.listConsultations({}).catch(() => null);
     if (Array.isArray(consRes)) {
       setConsultations(consRes.map(mapBackendConsultation));
@@ -706,6 +716,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []);
 
   const refreshPrescriptions = useCallback(async () => {
+    if (!api.isAuthenticated()) return;
     const rxRes = await api.listPrescriptions({}).catch(() => null);
     if (rxRes && Array.isArray(rxRes.prescriptions)) {
       setPrescriptions(rxRes.prescriptions.map(mapBackendPrescription));
@@ -713,6 +724,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []);
 
   const refreshFollowUps = useCallback(async () => {
+    if (!api.isAuthenticated()) return;
     const fuRes = await api.listFollowUps({}).catch(() => null);
     if (fuRes && Array.isArray(fuRes.follow_ups)) {
       setFollowUps(fuRes.follow_ups.map(mapBackendFollowUp));
@@ -720,6 +732,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []);
 
   const updateFollowUpStatus = useCallback(async (followUpId: string | number, status: 'Scheduled' | 'Completed' | 'Cancelled') => {
+    if (!api.isAuthenticated()) return;
     try {
       const numericId = typeof followUpId === 'string' ? parseInt(followUpId.replace(/\D/g, '') || followUpId, 10) : followUpId;
       const res = await api.updateFollowUp(numericId, { status: status.toUpperCase() });
@@ -733,6 +746,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []);
 
   const refreshNotifications = useCallback(async () => {
+    if (!api.isAuthenticated()) return;
     const notifsRes = await api.listNotifications().catch(() => null);
     const notifsList = Array.isArray(notifsRes)
       ? notifsRes
@@ -749,6 +763,12 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // Real-time synchronization via WebSocket (replaces aggressive 8s polling)
   useEffect(() => {
+    // Only subscribe and fetch if user is authenticated
+    if (!api.isAuthenticated()) {
+      realtimeSocket.disconnect();
+      return;
+    }
+
     // 1. Initial snapshot load on mount
     refreshData();
 
@@ -804,6 +824,21 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     refreshFollowUps,
     refreshNotifications,
   ]);
+
+  // Auth state change listener (triggers live sync when logging in, disconnects when logging out)
+  useEffect(() => {
+    const handleAuthChange = () => {
+      if (api.isAuthenticated()) {
+        refreshData();
+      } else {
+        realtimeSocket.disconnect();
+      }
+    };
+    window.addEventListener('auracms:auth_change', handleAuthChange);
+    return () => {
+      window.removeEventListener('auracms:auth_change', handleAuthChange);
+    };
+  }, [refreshData]);
 
   // Doctor Token generator helper
   const generateDoctorToken = (doctorCode: string): string => {

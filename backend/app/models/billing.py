@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String, Text, func
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -49,6 +50,14 @@ class Bill(Base):
         "BillItem", back_populates="bill", cascade="all, delete-orphan"
     )
     payments: Mapped[list["Payment"]] = relationship("Payment", back_populates="bill")
+
+    @hybrid_property
+    def total_amount(self) -> float:
+        return self.total
+
+    @total_amount.setter
+    def total_amount(self, value: float) -> None:
+        self.total = value
 
     def __repr__(self) -> str:
         return f"<Bill id={self.id} bill_number={self.bill_number!r} status={self.status!r}>"

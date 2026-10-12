@@ -41,6 +41,10 @@ export interface DashboardStats {
 }
 
 class ApiService {
+  public isAuthenticated(): boolean {
+    return !!localStorage.getItem('auracms_access_token');
+  }
+
   private getHeaders(): HeadersInit {
     const token = localStorage.getItem('auracms_access_token');
     const headers: HeadersInit = {
@@ -69,6 +73,9 @@ class ApiService {
           if (retryRes.ok) {
             return retryRes.json();
           }
+        } else {
+          // Refresh token failed or absent — clear stale credentials so we don't repeat 401s
+          this.logout();
         }
       }
 
@@ -131,6 +138,10 @@ class ApiService {
       localStorage.removeItem('auracms_doctor_id');
     }
 
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('auracms:auth_change'));
+    }
+
     return data;
   }
 
@@ -141,6 +152,10 @@ class ApiService {
     localStorage.removeItem('auracms_user_id');
     localStorage.removeItem('auracms_user_name');
     localStorage.removeItem('auracms_doctor_id');
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('auracms:auth_change'));
+    }
   }
 
   async getMe(): Promise<UserProfile> {

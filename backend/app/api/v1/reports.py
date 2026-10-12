@@ -240,7 +240,7 @@ def get_operational_report(
 
     # 2. Total Invoiced (bills created in period)
     invoiced_res = (
-        db.query(func.coalesce(func.sum(Bill.total_amount), 0))
+        db.query(func.coalesce(func.sum(Bill.total), 0))
         .filter(Bill.created_at >= start_dt, Bill.created_at <= end_dt)
         .scalar()
     )
