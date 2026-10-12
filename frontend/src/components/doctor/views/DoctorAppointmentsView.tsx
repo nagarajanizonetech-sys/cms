@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Calendar, 
-  Clock, 
-  Search, 
-  Filter, 
-  Stethoscope, 
-  ArrowRight, 
-  User, 
-  Phone, 
-  CheckCircle2, 
+import {
+  Calendar,
+  Clock,
+  Search,
+  Filter,
+  Stethoscope,
+  ArrowRight,
+  User,
+  Phone,
+  CheckCircle2,
   AlertCircle,
   Eye,
   Volume2,
@@ -43,10 +43,10 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
   const [itemsPerPage, setItemsPerPage] = useState<number>(8);
 
   // Doctor Isolation: Only this doctor's appointments
-  const myAppointments = appointments.filter((a) => 
+  const myAppointments = appointments.filter((a) =>
     !currentDoctor ? true : (
-      a.doctorId === currentDoctor.id || 
-      (cleanDocId && a.doctorId === cleanDocId) || 
+      a.doctorId === currentDoctor.id ||
+      (cleanDocId && a.doctorId === cleanDocId) ||
       (a.doctorName && currentDoctor.name && a.doctorName.toLowerCase().includes(currentDoctor.name.toLowerCase()))
     )
   );
@@ -124,7 +124,7 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
 
   return (
     <div className="space-y-6">
-      
+
       {/* Top Banner */}
       <div className="bg-white rounded-2xl border border-[#F1E4E1] p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -148,21 +148,19 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
           <div className="flex items-center bg-[#FFF9F7] p-1 border border-[#F1E4E1] rounded-xl shadow-xs">
             <button
               onClick={() => setViewMode('list')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                viewMode === 'list'
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${viewMode === 'list'
                   ? 'bg-[#18212F] text-white shadow-xs'
                   : 'text-[#667085] hover:text-[#18212F]'
-              }`}
+                }`}
             >
               List View
             </button>
             <button
               onClick={() => setViewMode('calendar')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                viewMode === 'calendar'
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${viewMode === 'calendar'
                   ? 'bg-[#18212F] text-white shadow-xs'
                   : 'text-[#667085] hover:text-[#18212F]'
-              }`}
+                }`}
             >
               Calendar View
             </button>
@@ -212,11 +210,10 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <button
               onClick={() => setStatusFilter('Waiting')}
-              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
-                statusFilter === 'Waiting'
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${statusFilter === 'Waiting'
                   ? 'bg-amber-500 text-white border-amber-600 shadow-xs'
                   : 'bg-white border-[#F1E4E1] hover:border-amber-300'
-              }`}
+                }`}
             >
               <div className="flex items-center justify-between">
                 <span className={`text-[10px] font-bold uppercase tracking-wider ${statusFilter === 'Waiting' ? 'text-amber-100' : 'text-[#667085]'}`}>
@@ -234,11 +231,10 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
 
             <button
               onClick={() => setStatusFilter('In Consultation')}
-              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
-                statusFilter === 'In Consultation'
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${statusFilter === 'In Consultation'
                   ? 'bg-[#F76762] text-white border-[#F76762] shadow-xs'
                   : 'bg-white border-[#F1E4E1] hover:border-[#F76762]/40'
-              }`}
+                }`}
             >
               <div className="flex items-center justify-between">
                 <span className={`text-[10px] font-bold uppercase tracking-wider ${statusFilter === 'In Consultation' ? 'text-red-100' : 'text-[#667085]'}`}>
@@ -256,11 +252,10 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
 
             <button
               onClick={() => setStatusFilter('Scheduled')}
-              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
-                statusFilter === 'Scheduled'
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${statusFilter === 'Scheduled'
                   ? 'bg-blue-600 text-white border-blue-700 shadow-xs'
                   : 'bg-white border-[#F1E4E1] hover:border-blue-300'
-              }`}
+                }`}
             >
               <div className="flex items-center justify-between">
                 <span className={`text-[10px] font-bold uppercase tracking-wider ${statusFilter === 'Scheduled' ? 'text-blue-100' : 'text-[#667085]'}`}>
@@ -278,11 +273,10 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
 
             <button
               onClick={() => setStatusFilter('Completed')}
-              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
-                statusFilter === 'Completed'
+              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${statusFilter === 'Completed'
                   ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs'
                   : 'bg-white border-[#F1E4E1] hover:border-emerald-300'
-              }`}
+                }`}
             >
               <div className="flex items-center justify-between">
                 <span className={`text-[10px] font-bold uppercase tracking-wider ${statusFilter === 'Completed' ? 'text-emerald-100' : 'text-[#667085]'}`}>
@@ -306,11 +300,10 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
                 <button
                   key={status}
                   onClick={() => setStatusFilter(status)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap cursor-pointer transition-all ${
-                    statusFilter === status
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap cursor-pointer transition-all ${statusFilter === status
                       ? 'bg-[#18212F] text-white shadow-xs'
                       : 'bg-white border border-[#F1E4E1] text-[#667085] hover:text-[#18212F]'
-                  }`}
+                    }`}
                 >
                   {status}
                   {status === 'Waiting' && waitingCount > 0 && ` (${waitingCount})`}
@@ -363,15 +356,14 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
                     const isWaiting = apt.status === 'Waiting';
                     const isInRoom = apt.status === 'In Consultation';
                     return (
-                      <tr 
-                        key={apt.id} 
-                        className={`transition-colors ${
-                          isInRoom 
-                            ? 'bg-[#FFF5F4]/60 hover:bg-[#FFF5F4]' 
-                            : isWaiting 
-                              ? 'bg-amber-50/40 hover:bg-amber-50/70' 
+                      <tr
+                        key={apt.id}
+                        className={`transition-colors ${isInRoom
+                            ? 'bg-[#FFF5F4]/60 hover:bg-[#FFF5F4]'
+                            : isWaiting
+                              ? 'bg-amber-50/40 hover:bg-amber-50/70'
                               : 'hover:bg-[#FFF9F7]/40'
-                        }`}
+                          }`}
                       >
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-2">
@@ -403,12 +395,11 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
                           {apt.reason || 'General Consultation'}
                         </td>
                         <td className="py-3 px-4">
-                          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                            apt.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' :
-                            apt.status === 'In Consultation' ? 'bg-[#F76762]/15 text-[#F76762] border border-[#F76762]/20' :
-                            apt.status === 'Waiting' ? 'bg-amber-100 text-amber-800 border border-amber-200' :
-                            'bg-neutral-100 text-neutral-700'
-                          }`}>
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${apt.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' :
+                              apt.status === 'In Consultation' ? 'bg-[#F76762]/15 text-[#F76762] border border-[#F76762]/20' :
+                                apt.status === 'Waiting' ? 'bg-amber-100 text-amber-800 border border-amber-200' :
+                                  'bg-neutral-100 text-neutral-700'
+                            }`}>
                             {isWaiting && <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />}
                             {isInRoom && <span className="w-1.5 h-1.5 rounded-full bg-[#F76762] animate-pulse" />}
                             <span>{apt.status}</span>
@@ -520,11 +511,10 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
                             key={page}
                             type="button"
                             onClick={() => setCurrentPage(page)}
-                            className={`h-7 w-7 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                              currentPage === page
+                            className={`h-7 w-7 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${currentPage === page
                                 ? 'bg-[#18212F] text-white shadow-2xs'
                                 : 'border border-[#F1E4E1] bg-white text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7]'
-                            }`}
+                              }`}
                           >
                             {page}
                           </button>

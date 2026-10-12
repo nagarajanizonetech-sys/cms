@@ -1,17 +1,17 @@
 import React from 'react';
-import { 
-  Users, 
-  Clock, 
-  Calendar, 
-  CheckCircle2, 
-  AlertCircle, 
-  ArrowRight, 
-  Phone, 
-  Activity, 
-  UserCheck, 
-  Volume2, 
-  Repeat, 
-  Eye, 
+import {
+  Users,
+  Clock,
+  Calendar,
+  CheckCircle2,
+  AlertCircle,
+  ArrowRight,
+  Phone,
+  Activity,
+  UserCheck,
+  Volume2,
+  Repeat,
+  Eye,
   Stethoscope,
   Sparkles,
   ChevronRight
@@ -23,12 +23,12 @@ interface DoctorDashboardProps {
 }
 
 export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ onNavigate }) => {
-  const { 
-    queues, 
-    appointments, 
-    consultations, 
-    followUps, 
-    currentDoctorId, 
+  const {
+    queues,
+    appointments,
+    consultations,
+    followUps,
+    currentDoctorId,
     doctors,
     startConsultation,
     callPatient,
@@ -66,7 +66,7 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ onNavigate }) 
 
   return (
     <div className="space-y-6">
-      
+
       {/* 1. Doctor Welcome & Active Clinical Consultation Banner */}
       {inConsultationPatient && (
         <div className="relative overflow-hidden p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-[#F76762] via-[#F8746F] to-[#FB866E] text-white shadow-lg shadow-[#F76762]/20 border border-white/20 animate-in slide-in-from-top-2 duration-200">
@@ -135,7 +135,7 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ onNavigate }) 
 
       {/* 2. Today's Clinical Overview Metrics */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-        
+
         {/* Card 1: Waiting */}
         <div className="p-4 bg-white rounded-2xl border border-[#F1E4E1] shadow-2xs hover:shadow-xs transition-shadow space-y-1">
           <div className="flex items-center justify-between text-[#667085]">
@@ -263,24 +263,22 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ onNavigate }) 
               return (
                 <div
                   key={item.id}
-                  className={`p-4 rounded-xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${
-                    isInRoom
+                  className={`p-4 rounded-xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${isInRoom
                       ? 'bg-[#FFF9F7] border-[#F76762] shadow-2xs'
                       : isWaiting
-                      ? 'bg-white hover:bg-[#FFF9F7]/40 border-[#F1E4E1]'
-                      : 'bg-neutral-50/60 border-neutral-200 opacity-75'
-                  }`}
+                        ? 'bg-white hover:bg-[#FFF9F7]/40 border-[#F1E4E1]'
+                        : 'bg-neutral-50/60 border-neutral-200 opacity-75'
+                    }`}
                 >
                   {/* Left: Token & Patient Info */}
                   <div className="flex items-start sm:items-center gap-3.5 min-w-0">
                     <div
-                      className={`px-3.5 py-2 min-w-[68px] h-11 rounded-xl flex items-center justify-center font-bold font-mono text-sm shrink-0 whitespace-nowrap ${
-                        isInRoom
+                      className={`px-3.5 py-2 min-w-[68px] h-11 rounded-xl flex items-center justify-center font-bold font-mono text-sm shrink-0 whitespace-nowrap ${isInRoom
                           ? 'bg-[#F76762] text-white shadow-xs'
                           : isWaiting
-                          ? 'bg-amber-100 text-amber-900 border border-amber-200'
-                          : 'bg-neutral-100 text-neutral-600'
-                      }`}
+                            ? 'bg-amber-100 text-amber-900 border border-amber-200'
+                            : 'bg-neutral-100 text-neutral-600'
+                        }`}
                     >
                       {item.token}
                     </div>
@@ -294,13 +292,12 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ onNavigate }) 
                           {item.patientUhid}
                         </span>
                         <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                            isInRoom
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isInRoom
                               ? 'bg-[#F76762]/10 text-[#F76762]'
                               : isWaiting
-                              ? 'bg-amber-100 text-amber-700'
-                              : 'bg-emerald-100 text-emerald-700'
-                          }`}
+                                ? 'bg-amber-100 text-amber-700'
+                                : 'bg-emerald-100 text-emerald-700'
+                            }`}
                         >
                           {item.status}
                         </span>
@@ -336,11 +333,10 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ onNavigate }) 
                     {!isDone && (
                       <button
                         onClick={() => handleStartConsultation(item.appointmentId)}
-                        className={`px-4 py-2 text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer transition-all shadow-xs ${
-                          isInRoom
+                        className={`px-4 py-2 text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer transition-all shadow-xs ${isInRoom
                             ? 'bg-[#F76762] text-white hover:opacity-95'
                             : 'bg-gradient-to-r from-[#F76762] to-[#FB866E] text-white hover:opacity-95'
-                        }`}
+                          }`}
                       >
                         <Stethoscope className="w-3.5 h-3.5" />
                         <span>{isInRoom ? 'Open Workspace' : 'Start Consultation'}</span>
@@ -378,7 +374,7 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ onNavigate }) 
 
       {/* 4. Secondary Row: Quick Appointments Schedule & Recent Consultations */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
+
         {/* Today's Remaining Schedule */}
         <div className="bg-white rounded-2xl border border-[#F1E4E1] p-5 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
@@ -409,12 +405,11 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ onNavigate }) 
                     {apt.reason || 'Consultation'}
                   </div>
                 </div>
-                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                  apt.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' :
-                  apt.status === 'In Consultation' ? 'bg-[#F76762]/10 text-[#F76762]' :
-                  apt.status === 'Waiting' ? 'bg-amber-100 text-amber-800' :
-                  'bg-neutral-100 text-neutral-700'
-                }`}>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${apt.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' :
+                    apt.status === 'In Consultation' ? 'bg-[#F76762]/10 text-[#F76762]' :
+                      apt.status === 'Waiting' ? 'bg-amber-100 text-amber-800' :
+                        'bg-neutral-100 text-neutral-700'
+                  }`}>
                   {apt.status}
                 </span>
               </div>

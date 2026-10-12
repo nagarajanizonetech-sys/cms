@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  Stethoscope, 
-  Search, 
-  Calendar, 
-  Clock, 
-  ArrowRight, 
-  Eye, 
-  CheckCircle2, 
+import {
+  Stethoscope,
+  Search,
+  Calendar,
+  Clock,
+  ArrowRight,
+  Eye,
+  CheckCircle2,
   Filter,
   FileText
 } from 'lucide-react';
@@ -29,10 +29,10 @@ export const DoctorConsultationsView: React.FC<DoctorConsultationsViewProps> = (
   const [searchQuery, setSearchQuery] = useState('');
 
   // Doctor Isolation: Only consultations conducted by this doctor!
-  const myConsultations = consultations.filter((c) => 
+  const myConsultations = consultations.filter((c) =>
     !currentDoctor ? true : (
-      c.doctorId === currentDoctor.id || 
-      (cleanDocId && c.doctorId === cleanDocId) || 
+      c.doctorId === currentDoctor.id ||
+      (cleanDocId && c.doctorId === cleanDocId) ||
       (c.doctorName && currentDoctor.name && c.doctorName.toLowerCase().includes(currentDoctor.name.toLowerCase()))
     )
   );
@@ -50,7 +50,7 @@ export const DoctorConsultationsView: React.FC<DoctorConsultationsViewProps> = (
 
   return (
     <div className="space-y-6">
-      
+
       {/* Top Banner */}
       <div className="bg-white rounded-2xl border border-[#F1E4E1] p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -135,10 +135,9 @@ export const DoctorConsultationsView: React.FC<DoctorConsultationsViewProps> = (
                     )}
                   </td>
                   <td className="py-3 px-4">
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      c.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' :
-                      'bg-amber-100 text-amber-800'
-                    }`}>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${c.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' :
+                        'bg-amber-100 text-amber-800'
+                      }`}>
                       {c.status}
                     </span>
                   </td>

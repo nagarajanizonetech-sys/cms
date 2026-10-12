@@ -1,27 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  ArrowLeft, 
-  ArrowRight, 
-  Stethoscope, 
-  AlertTriangle, 
-  Heart, 
-  Activity, 
-  Clock, 
-  User, 
-  Phone, 
-  FileText, 
-  Plus, 
-  Trash2, 
-  Check, 
+import {
+  ArrowLeft,
+  ArrowRight,
+  Stethoscope,
+  AlertTriangle,
+  Heart,
+  Activity,
+  Clock,
+  User,
+  Phone,
+  FileText,
+  Plus,
+  Trash2,
+  Check,
   X,
-  Printer, 
-  Save, 
-  CreditCard, 
-  ChevronRight, 
-  Sparkles, 
-  Pill, 
-  ShieldAlert, 
-  CheckCircle2, 
+  Printer,
+  Save,
+  CreditCard,
+  ChevronRight,
+  Sparkles,
+  Pill,
+  ShieldAlert,
+  CheckCircle2,
   AlertCircle,
   HelpCircle,
   History,
@@ -29,13 +29,13 @@ import {
   IndianRupee
 } from 'lucide-react';
 import { useReception } from '../../../context/ReceptionContext';
-import { 
-  Consultation, 
-  Vitals, 
-  SymptomItem, 
-  DiagnosisItem, 
-  PrescriptionMedicine, 
-  Prescription 
+import {
+  Consultation,
+  Vitals,
+  SymptomItem,
+  DiagnosisItem,
+  PrescriptionMedicine,
+  Prescription
 } from '../../../types/doctor';
 import { ServiceChargeItem, PaymentMethod, ClinicServiceName } from '../../../types/reception';
 import { PrescriptionA4Modal } from '../modals/PrescriptionA4Modal';
@@ -47,8 +47,8 @@ interface ConsultationWorkspaceProps {
 }
 
 const COMMON_SYMPTOMS = [
-  'Fever', 'Dry Cough', 'Productive Cough', 'Sore Throat', 'Headache', 
-  'Fatigue', 'Chest Pain', 'Shortness of Breath', 'Abdominal Pain', 
+  'Fever', 'Dry Cough', 'Productive Cough', 'Sore Throat', 'Headache',
+  'Fatigue', 'Chest Pain', 'Shortness of Breath', 'Abdominal Pain',
   'Nausea', 'Vomiting', 'Dizziness', 'Joint Pain', 'Back Pain', 'Skin Rash'
 ];
 
@@ -67,12 +67,12 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
   appointmentId,
   onNavigate,
 }) => {
-  const { 
-    appointments, 
-    patients, 
-    doctors, 
-    currentDoctorId, 
-    consultations, 
+  const {
+    appointments,
+    patients,
+    doctors,
+    currentDoctorId,
+    consultations,
     prescriptions,
     bills,
     startConsultation,
@@ -100,7 +100,7 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
 
   // Filter patient's previous consultations (excluding currently open session)
   const patientPreviousConsultations = consultations.filter((c) => {
-    const isPatientMatch = 
+    const isPatientMatch =
       (appointment && c.patientId === appointment.patientId) ||
       (patient && (c.patientId === patient.id || (c.patientUhid && c.patientUhid === patient.uhid)));
     const isCurrent = c.appointmentId === appointmentId || c.id === `cons-${appointmentId}`;
@@ -569,7 +569,7 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
 
   return (
     <div className="space-y-6 pb-24">
-      
+
       {/* 1. Top Bar Navigation & Autosave Status */}
       <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
         <button
@@ -601,7 +601,7 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
       {/* 2. Patient Header Banner */}
       <div className="bg-white rounded-2xl border border-[#F1E4E1] p-5 shadow-xs space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          
+
           <div className="flex items-start sm:items-center gap-3.5">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#F76762] to-[#FB866E] flex items-center justify-center text-white font-bold text-base shadow-xs shrink-0">
               {patient?.fullName.charAt(0) || 'P'}
@@ -699,10 +699,10 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
 
       {/* 3. Main Two-Column Clinical Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
+
         {/* Left Column (Col 4): Patient Clinical Context & Vitals */}
         <div className="lg:col-span-4 space-y-6">
-          
+
           {/* Vitals Recording Panel */}
           <div className="bg-white rounded-2xl border border-[#F1E4E1] p-5 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
@@ -855,8 +855,8 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
                       );
 
                       // Extract causes / symptoms
-                      const symptomsList = prevCons.symptoms && prevCons.symptoms.length > 0 
-                        ? prevCons.symptoms 
+                      const symptomsList = prevCons.symptoms && prevCons.symptoms.length > 0
+                        ? prevCons.symptoms
                         : [];
                       const chiefComplaintText = prevCons.chiefComplaint;
 
@@ -871,9 +871,8 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
                             <div className="text-[10px] text-[#667085] mt-0.5">
                               {prevCons.doctorName ? `Dr. ${prevCons.doctorName.replace(/^Dr\.\s*/i, '')}` : 'Doctor Visit'}
                             </div>
-                            <span className={`inline-block px-1.5 py-0.5 mt-1 rounded text-[9px] font-bold ${
-                              prevCons.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
-                            }`}>
+                            <span className={`inline-block px-1.5 py-0.5 mt-1 rounded text-[9px] font-bold ${prevCons.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
+                              }`}>
                               {prevCons.status}
                             </span>
                             {prevCons.appointmentId && (
@@ -953,7 +952,7 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
 
         {/* Right Column (Col 8): Clinical Documentation & Prescription Workspace */}
         <div className="lg:col-span-8 space-y-6">
-          
+
           {/* Section 1: Symptoms & Clinical Manifestations */}
           <div className="bg-white rounded-2xl border border-[#F1E4E1] p-5 shadow-xs space-y-3.5">
             <div className="flex items-center justify-between">
@@ -980,11 +979,10 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
                         handleAddSymptom(sym);
                       }
                     }}
-                    className={`px-2.5 py-1 text-[11px] font-medium rounded-lg transition-colors cursor-pointer flex items-center gap-1 border ${
-                      isSelected
+                    className={`px-2.5 py-1 text-[11px] font-medium rounded-lg transition-colors cursor-pointer flex items-center gap-1 border ${isSelected
                         ? 'bg-[#F76762]/10 border-[#F76762] text-[#F76762] font-semibold'
                         : 'bg-[#FFF9F7] hover:bg-[#F76762]/10 border-[#F1E4E1] text-[#18212F]'
-                    }`}
+                      }`}
                   >
                     <span className="text-xs">{isSelected ? '✓' : '+'}</span>
                     <span>{sym}</span>
@@ -1149,13 +1147,12 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
                 Payment Collection Mode:
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                
+
                 {/* Send to Reception */}
-                <label className={`p-3 rounded-xl border flex items-start gap-2.5 cursor-pointer transition-all ${
-                  !collectNow 
-                    ? 'bg-[#FFF9F7] border-[#F76762] text-[#18212F]' 
+                <label className={`p-3 rounded-xl border flex items-start gap-2.5 cursor-pointer transition-all ${!collectNow
+                    ? 'bg-[#FFF9F7] border-[#F76762] text-[#18212F]'
                     : 'bg-white border-[#F1E4E1] text-[#667085]'
-                }`}>
+                  }`}>
                   <input
                     type="radio"
                     name="collectionMode"
@@ -1172,11 +1169,10 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
                 </label>
 
                 {/* Collect Now by Doctor */}
-                <label className={`p-3 rounded-xl border flex items-start gap-2.5 cursor-pointer transition-all ${
-                  collectNow 
-                    ? 'bg-[#FFF9F7] border-[#F76762] text-[#18212F]' 
+                <label className={`p-3 rounded-xl border flex items-start gap-2.5 cursor-pointer transition-all ${collectNow
+                    ? 'bg-[#FFF9F7] border-[#F76762] text-[#18212F]'
                     : 'bg-white border-[#F1E4E1] text-[#667085]'
-                }`}>
+                  }`}>
                   <input
                     type="radio"
                     name="collectionMode"
@@ -1204,11 +1200,10 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
                         key={m}
                         type="button"
                         onClick={() => setPaymentMethod(m)}
-                        className={`px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer border transition-colors ${
-                          paymentMethod === m 
-                            ? 'bg-white border-[#F76762] text-[#F76762] shadow-2xs' 
+                        className={`px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer border transition-colors ${paymentMethod === m
+                            ? 'bg-white border-[#F76762] text-[#F76762] shadow-2xs'
                             : 'bg-transparent border-[#F1E4E1] text-[#667085]'
-                        }`}
+                          }`}
                       >
                         {m}
                       </button>
@@ -1399,7 +1394,7 @@ export const ConsultationWorkspace: React.FC<ConsultationWorkspaceProps> = ({
       {/* 4. Sticky Bottom Consultation Action Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#F1E4E1] py-2.5 sm:py-3 px-3 sm:px-8 shadow-lg">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
-          
+
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
             <span className="text-xs font-semibold text-[#18212F] truncate">
               <span className="hidden sm:inline">Patient: </span><span className="font-bold">{appointment?.patientName}</span>

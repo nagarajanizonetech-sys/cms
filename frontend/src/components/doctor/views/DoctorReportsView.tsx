@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  BarChart3, 
-  CheckCircle2, 
-  Clock, 
-  Calendar, 
-  Repeat, 
-  CreditCard, 
-  TrendingUp, 
+import {
+  BarChart3,
+  CheckCircle2,
+  Clock,
+  Calendar,
+  Repeat,
+  CreditCard,
+  TrendingUp,
   Stethoscope,
   Sparkles,
   RefreshCw
@@ -63,7 +63,7 @@ export const DoctorReportsView: React.FC<DoctorReportsViewProps> = () => {
   const completionRate = docReport ? docReport.completion_rate : (totalAppointmentsCount > 0 ? Math.round((completedCount / totalAppointmentsCount) * 100) : 100);
   const scheduledFollowUpsCount = docReport ? docReport.scheduled_follow_ups : myFollowUps.length;
   const totalCollectedByDoctor = docReport ? docReport.total_collected : (() => {
-    const myBills = bills.filter((b) => 
+    const myBills = bills.filter((b) =>
       b.payments.some((p) => p.collectedBy === 'Doctor' && p.collectorName?.includes(currentDoctor?.name || ''))
     );
     return myBills.reduce((acc, b) => {
@@ -80,7 +80,7 @@ export const DoctorReportsView: React.FC<DoctorReportsViewProps> = () => {
 
   return (
     <div className="space-y-6">
-      
+
       {/* Top Banner */}
       <div className="bg-white rounded-2xl border border-[#F1E4E1] p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -110,7 +110,7 @@ export const DoctorReportsView: React.FC<DoctorReportsViewProps> = () => {
 
       {/* Primary Clinical KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        
+
         <div className="bg-white rounded-2xl border border-[#F1E4E1] p-5 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-[#667085]">
             <span className="text-xs font-semibold">Total Consultations</span>
@@ -167,7 +167,7 @@ export const DoctorReportsView: React.FC<DoctorReportsViewProps> = () => {
 
       {/* Detailed Clinical Summary Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
+
         {/* Consultations by Type */}
         <div className="bg-white rounded-2xl border border-[#F1E4E1] p-5 shadow-xs space-y-4">
           <h3 className="text-xs font-bold text-[#18212F] uppercase tracking-wider">

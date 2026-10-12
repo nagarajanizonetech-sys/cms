@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  Receipt, 
-  CreditCard, 
-  Search, 
-  IndianRupee, 
-  CheckCircle2, 
-  Clock, 
-  AlertCircle 
+import {
+  Receipt,
+  CreditCard,
+  Search,
+  IndianRupee,
+  CheckCircle2,
+  Clock,
+  AlertCircle
 } from 'lucide-react';
 import { useReception } from '../../../context/ReceptionContext';
 
@@ -73,7 +73,7 @@ export const DoctorChargesView: React.FC<DoctorChargesViewProps> = () => {
 
   return (
     <div className="space-y-6">
-      
+
       {/* Top Banner */}
       <div className="bg-white rounded-2xl border border-[#F1E4E1] p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -111,11 +111,10 @@ export const DoctorChargesView: React.FC<DoctorChargesViewProps> = () => {
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
-                statusFilter === status
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition-all ${statusFilter === status
                   ? 'bg-[#18212F] text-white shadow-xs'
                   : 'bg-white border border-[#F1E4E1] text-[#667085] hover:text-[#18212F]'
-              }`}
+                }`}
             >
               {status}
             </button>

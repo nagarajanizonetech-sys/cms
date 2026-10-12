@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { 
-  Clock, 
-  Search, 
-  Volume2, 
-  Stethoscope, 
-  ArrowRight, 
-  Eye, 
-  SkipForward, 
-  CheckCircle2, 
+import {
+  Clock,
+  Search,
+  Volume2,
+  Stethoscope,
+  ArrowRight,
+  Eye,
+  SkipForward,
+  CheckCircle2,
   AlertCircle,
   Filter,
   UserCheck
@@ -19,14 +19,14 @@ interface DoctorQueueViewProps {
 }
 
 export const DoctorQueueView: React.FC<DoctorQueueViewProps> = ({ onNavigate }) => {
-  const { 
-    queues, 
-    appointments, 
-    currentDoctorId, 
+  const {
+    queues,
+    appointments,
+    currentDoctorId,
     doctors,
     startConsultation,
     callPatient,
-    skipPatient 
+    skipPatient
   } = useReception();
 
   const currentDoctor = doctors.find((d) => d.id === currentDoctorId || d.id === `doc-${currentDoctorId}`) || doctors[0] || {
@@ -61,7 +61,7 @@ export const DoctorQueueView: React.FC<DoctorQueueViewProps> = ({ onNavigate }) 
 
   return (
     <div className="space-y-6">
-      
+
       {/* Header Info */}
       <div className="bg-white rounded-2xl border border-[#F1E4E1] p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -97,11 +97,10 @@ export const DoctorQueueView: React.FC<DoctorQueueViewProps> = ({ onNavigate }) 
             <button
               key={tab}
               onClick={() => setStatusFilter(tab)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap cursor-pointer transition-all ${
-                statusFilter === tab
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap cursor-pointer transition-all ${statusFilter === tab
                   ? 'bg-[#18212F] text-white shadow-xs'
                   : 'bg-white border border-[#F1E4E1] text-[#667085] hover:text-[#18212F]'
-              }`}
+                }`}
             >
               {tab}
             </button>
@@ -132,24 +131,22 @@ export const DoctorQueueView: React.FC<DoctorQueueViewProps> = ({ onNavigate }) 
             return (
               <div
                 key={item.id}
-                className={`bg-white rounded-2xl border p-4 sm:p-5 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${
-                  isInRoom
+                className={`bg-white rounded-2xl border p-4 sm:p-5 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${isInRoom
                     ? 'border-[#F76762] shadow-sm bg-[#FFF9F7]'
                     : isWaiting
-                    ? 'border-[#F1E4E1] hover:border-[#F76762]/40'
-                    : 'border-neutral-200 opacity-80'
-                }`}
+                      ? 'border-[#F1E4E1] hover:border-[#F76762]/40'
+                      : 'border-neutral-200 opacity-80'
+                  }`}
               >
                 {/* Left: Token badge & Patient Identification */}
                 <div className="flex items-start sm:items-center gap-4 min-w-0">
                   <div
-                    className={`px-4 py-2 min-w-[76px] h-14 rounded-2xl flex items-center justify-center font-bold font-mono text-base shrink-0 whitespace-nowrap ${
-                      isInRoom
+                    className={`px-4 py-2 min-w-[76px] h-14 rounded-2xl flex items-center justify-center font-bold font-mono text-base shrink-0 whitespace-nowrap ${isInRoom
                         ? 'bg-[#F76762] text-white shadow-md shadow-[#F76762]/20'
                         : isWaiting
-                        ? 'bg-amber-100 text-amber-900 border border-amber-200'
-                        : 'bg-neutral-100 text-neutral-600'
-                    }`}
+                          ? 'bg-amber-100 text-amber-900 border border-amber-200'
+                          : 'bg-neutral-100 text-neutral-600'
+                      }`}
                   >
                     {item.token}
                   </div>
@@ -163,13 +160,12 @@ export const DoctorQueueView: React.FC<DoctorQueueViewProps> = ({ onNavigate }) 
                         {item.patientUhid}
                       </span>
                       <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          isInRoom
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isInRoom
                             ? 'bg-[#F76762]/10 text-[#F76762]'
                             : isWaiting
-                            ? 'bg-amber-100 text-amber-700'
-                            : 'bg-emerald-100 text-emerald-700'
-                        }`}
+                              ? 'bg-amber-100 text-amber-700'
+                              : 'bg-emerald-100 text-emerald-700'
+                          }`}
                       >
                         {item.status}
                       </span>

@@ -1,15 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { api } from '../services/api';
 import { realtimeSocket } from '../services/websocket';
-import { 
-  Patient, 
-  Doctor, 
-  Appointment, 
-  QueueItem, 
-  Bill, 
+import {
+  Patient,
+  Doctor,
+  Appointment,
+  QueueItem,
+  Bill,
   BillStatus,
-  PaymentRecord, 
-  ClinicNotification, 
+  PaymentRecord,
+  ClinicNotification,
   PatientTimelineEvent,
   PaymentMethod,
   ServiceChargeItem,
@@ -179,8 +179,8 @@ function mapBackendBill(b: any): Bill {
   }));
 
   const payments: PaymentRecord[] = (b.payments || []).map((pay: any) => {
-    const isDoc = (pay.note && pay.note.toLowerCase().includes('doctor')) || 
-                  (pay.receiver_name && (pay.receiver_name.toLowerCase().includes('dr') || pay.receiver_name.toLowerCase().includes('doctor')));
+    const isDoc = (pay.note && pay.note.toLowerCase().includes('doctor')) ||
+      (pay.receiver_name && (pay.receiver_name.toLowerCase().includes('dr') || pay.receiver_name.toLowerCase().includes('doctor')));
     return {
       id: String(pay.id),
       receiptNumber: pay.receipt_number || '',
@@ -846,7 +846,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       .filter(q => q.token.startsWith(`${doctorCode}-`))
       .map(q => parseInt(q.token.split('-')[1], 10))
       .filter(n => !isNaN(n));
-    
+
     const nextNum = existingDoctorTokens.length > 0 ? Math.max(...existingDoctorTokens) + 1 : 1;
     return `${doctorCode}-${String(nextNum).padStart(3, '0')}`;
   };
@@ -1045,7 +1045,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const numericPatientId = parseInt(apt.patientId.replace(/\D/g, '') || apt.patientId, 10);
     const feeToAllocate = defaultConsultationFee > 0 ? defaultConsultationFee : (doctor?.consultationFee || 500);
 
-    const existingBill = bills.find(b => 
+    const existingBill = bills.find(b =>
       b.appointmentId === appointmentId || (numericApptId && b.appointmentId === String(numericApptId))
     );
 
@@ -1083,15 +1083,15 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       setBills(prev => [optimisticBill, ...prev.filter(b => b.appointmentId !== appointmentId && b.appointmentId !== String(numericApptId))]);
 
       logTimeline(
-        apt.patientId, 
-        'Fee Charged', 
-        `Consultation Bill Generated · ₹${feeToAllocate.toFixed(2)}`, 
+        apt.patientId,
+        'Fee Charged',
+        `Consultation Bill Generated · ₹${feeToAllocate.toFixed(2)}`,
         `Price allocated based on Default Patient Fee Settings for Token ${assignedToken}.`
       );
       notify(
-        'Invoice Generated', 
-        `Consultation bill of ₹${feeToAllocate.toFixed(2)} generated for ${apt.patientName}.`, 
-        'payment', 
+        'Invoice Generated',
+        `Consultation bill of ₹${feeToAllocate.toFixed(2)} generated for ${apt.patientName}.`,
+        'payment',
         '/reception/payments'
       );
     }
@@ -1477,12 +1477,12 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // 9c. Update Bill / Payment Amount for Patient
   const updateBill = async (
-    billId: string, 
-    data: { 
-      items?: { service_name: string; unit_price: number; quantity: number; total?: number; description?: string }[]; 
-      discount?: number; 
-      tax?: number; 
-      notes?: string; 
+    billId: string,
+    data: {
+      items?: { service_name: string; unit_price: number; quantity: number; total?: number; description?: string }[];
+      discount?: number;
+      tax?: number;
+      notes?: string;
     }
   ) => {
     const bill = bills.find(b => b.id === billId);
@@ -1569,7 +1569,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const searchPatients = (query: string): Patient[] => {
     if (!query.trim()) return patients;
     const q = query.toLowerCase().trim();
-    return patients.filter(p => 
+    return patients.filter(p =>
       p.fullName.toLowerCase().includes(q) ||
       p.uhid.toLowerCase().includes(q) ||
       p.mobile.replace(/\D/g, '').includes(q.replace(/\D/g, ''))
@@ -1581,13 +1581,13 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
     const numericId = parseInt(id.replace(/\D/g, '') || id, 10);
     if (numericId) {
-      api.markNotificationRead(numericId).catch(() => {});
+      api.markNotificationRead(numericId).catch(() => { });
     }
   };
 
   const markAllNotificationsAsRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    api.markAllNotificationsRead().catch(() => {});
+    api.markAllNotificationsRead().catch(() => { });
   };
 
   // 12. Clinical & Doctor Portal Actions
@@ -1604,10 +1604,10 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const cleanDocId = doctorId.replace('doc-', '');
     const apt = appointments.find(a => a.id === appointmentId);
     const doctor = doctors.find(d => d.id === cleanDocId || d.id === doctorId) || doctors[0];
-    
+
     // Update appointment status to 'In Consultation'
     setAppointments(prev => prev.map(a => a.id === appointmentId ? { ...a, status: 'In Consultation' } : a));
-    
+
     // Update doctor status and token
     if (doctor && apt) {
       setDoctors(prev => prev.map(d => (d.id === cleanDocId || d.id === doctorId) ? {
@@ -1787,9 +1787,9 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           vitals: vitalsPayload,
         }).then(res => {
           if (res && res.id) {
-            setConsultations(prev => prev.map(c => 
-              (c.id === consultation.id || c.appointmentId === consultation.appointmentId) 
-                ? { ...c, id: String(res.id) } 
+            setConsultations(prev => prev.map(c =>
+              (c.id === consultation.id || c.appointmentId === consultation.appointmentId)
+                ? { ...c, id: String(res.id) }
                 : c
             ));
           }
@@ -1803,7 +1803,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     consultationData: Partial<Consultation>
   ): Promise<{ success: boolean; message: string }> => {
     // 1. Update local state
-    setConsultations(prev => prev.map(c => 
+    setConsultations(prev => prev.map(c =>
       (c.id === consultationId || (consultationData.appointmentId && c.appointmentId === consultationData.appointmentId))
         ? { ...c, ...consultationData }
         : c
@@ -1960,7 +1960,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     if (prescriptionData && prescriptionData.medicines && prescriptionData.medicines.length > 0) {
       const rxNum = prescriptionData.rxNumber || `RX-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
       createdPrescriptionId = prescriptionData.id || `rx-${Date.now()}`;
-      
+
       const newRx: Prescription = {
         id: createdPrescriptionId,
         rxNumber: rxNum,
@@ -2063,8 +2063,8 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const totalChargeAmount = charges.reduce((sum, ch) => sum + ch.amount, 0);
     if (totalChargeAmount > 0) {
       const isCollected = !!paymentAction?.collectNow;
-      const existingApptBill = bills.find(b => 
-        b.appointmentId === consultationData.appointmentId || 
+      const existingApptBill = bills.find(b =>
+        b.appointmentId === consultationData.appointmentId ||
         (numericApptId && b.appointmentId === String(numericApptId))
       );
 
@@ -2161,7 +2161,7 @@ export const ReceptionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       if (status === 'Dispensed') {
         api.dispensePrescription(numericRxId).catch(() => api.updatePrescription(numericRxId, { status: 'DISPENSED' }));
       } else {
-        api.updatePrescription(numericRxId, { status: status.toUpperCase() }).catch(() => {});
+        api.updatePrescription(numericRxId, { status: status.toUpperCase() }).catch(() => { });
       }
     }
   };

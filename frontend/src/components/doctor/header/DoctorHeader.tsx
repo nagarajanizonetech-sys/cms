@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Menu, 
-  Search, 
-  Bell, 
-  LogOut, 
+import {
+  Menu,
+  Search,
+  Bell,
+  LogOut,
   Circle,
   ChevronDown,
   X
@@ -52,7 +52,7 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
   const [isDoctorSwitchOpen, setIsDoctorSwitchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  
+
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const searchBoxRef = useRef<HTMLDivElement>(null);
 
@@ -94,7 +94,7 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#F1E4E1] transition-all">
       <div className="px-3 sm:px-6 lg:px-8 min-h-[58px] sm:h-20 py-2 sm:py-0 flex items-center justify-between gap-2 sm:gap-4">
-        
+
         {/* Left: Mobile hamburger & Page Title / Breadcrumb */}
         <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
           <button
@@ -114,7 +114,7 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
 
         {/* Right: Quick Search, Doctor Availability, Notifications & Doctor Profile */}
         <div className="flex items-center gap-1.5 sm:gap-3.5 shrink-0">
-          
+
           {/* Global Clinical Search */}
           <div ref={searchBoxRef} className="relative hidden md:block">
             <div className={`relative flex items-center transition-all ${isSearchFocused ? 'w-72' : 'w-56'}`}>
@@ -170,7 +170,7 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
 
           {/* Availability Status Toggle */}
           <div className="relative">
-            <div 
+            <div
               className="flex items-center justify-center sm:justify-start gap-1 sm:gap-1.5 w-9 h-9 sm:w-auto sm:h-10 px-0 sm:px-3 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-xs font-semibold text-[#18212F] shrink-0 relative"
               title={`Doctor status: ${currentDoctor?.status || 'Available'}`}
             >
@@ -268,11 +268,10 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
                           setIsProfileMenuOpen(false);
                           onNavigate('/doctor/dashboard');
                         }}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors cursor-pointer ${
-                          doc.id === currentDoctor?.id
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors cursor-pointer ${doc.id === currentDoctor?.id
                             ? 'bg-[#F76762]/10 text-[#F76762] font-bold'
                             : 'text-[#18212F] hover:bg-[#FFF9F7]'
-                        }`}
+                          }`}
                       >
                         <div>
                           <div className="font-semibold text-[11px]">{doc.name}</div>

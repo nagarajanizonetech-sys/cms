@@ -1,16 +1,16 @@
 import React from 'react';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Calendar, 
-  Clock, 
-  CreditCard, 
-  FileText, 
-  BarChart3, 
-  ChevronLeft, 
-  ChevronRight, 
-  Stethoscope, 
-  LogOut, 
+import {
+  LayoutDashboard,
+  Users,
+  Calendar,
+  Clock,
+  CreditCard,
+  FileText,
+  BarChart3,
+  ChevronLeft,
+  ChevronRight,
+  Stethoscope,
+  LogOut,
   X,
   History,
   Repeat,
@@ -59,8 +59,8 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
       label: 'Appointments',
       route: '/doctor/appointments',
       icon: Calendar,
-      badge: doctorWaitingCount > 0 
-        ? `${doctorWaitingCount} waiting` 
+      badge: doctorWaitingCount > 0
+        ? `${doctorWaitingCount} waiting`
         : (doctorTodayAptCount > 0 ? `${doctorTodayAptCount}` : undefined),
       badgeColor: doctorWaitingCount > 0 ? 'bg-amber-100 text-amber-800' : 'bg-[#F76762]/10 text-[#F76762]',
     },
@@ -231,10 +231,9 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
                   w-full flex items-center rounded-xl text-sm font-semibold
                   transition-all duration-150 cursor-pointer group relative
                   ${!showLabels ? 'justify-center p-3' : 'px-3 py-2.5 gap-3'}
-                  ${
-                    active
-                      ? 'bg-[#F76762]/10 text-[#F76762] font-bold border-l-3 border-[#F76762]'
-                      : 'text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7]'
+                  ${active
+                    ? 'bg-[#F76762]/10 text-[#F76762] font-bold border-l-3 border-[#F76762]'
+                    : 'text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7]'
                   }
                 `}
               >
