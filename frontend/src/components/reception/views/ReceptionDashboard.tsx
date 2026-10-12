@@ -12,6 +12,7 @@ import {
   Search, 
   Wallet, 
   ArrowRight,
+  ChevronLeft,
   ChevronRight,
   MoreVertical,
   Activity,
@@ -46,6 +47,8 @@ export const ReceptionDashboard: React.FC<ReceptionDashboardProps> = ({
   } = useReception();
 
   const [statusFilter, setStatusFilter] = useState<string>('All');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(5);
   const [successToast, setSuccessToast] = useState<string | null>(null);
   const [dbStats, setDbStats] = useState<DashboardStats | null>(null);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
@@ -108,10 +111,19 @@ export const ReceptionDashboard: React.FC<ReceptionDashboardProps> = ({
     }
   };
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter]);
+
   const filteredAppointments = appointments.filter(a => {
     if (statusFilter === 'All') return true;
     return a.status === statusFilter;
   });
+
+  const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage) || 1;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, filteredAppointments.length);
+  const paginatedAppointments = filteredAppointments.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="space-y-6">
@@ -520,7 +532,7 @@ export const ReceptionDashboard: React.FC<ReceptionDashboardProps> = ({
                   </td>
                 </tr>
               ) : (
-                filteredAppointments.map((apt) => (
+                paginatedAppointments.map((apt) => (
                   <tr key={apt.id} className="hover:bg-[#FFF9F7]/50 transition-colors">
                     
                     {/* Time */}
@@ -613,6 +625,90 @@ export const ReceptionDashboard: React.FC<ReceptionDashboardProps> = ({
           </table>
         </div>
 
+        {/* Pagination Controls */}
+        {filteredAppointments.length > 0 && (
+          <div className="mt-4 pt-3.5 border-t border-[#F1E4E1] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#667085]">
+            <div className="flex flex-wrap items-center gap-2">
+              <span>
+                Showing <strong className="text-[#18212F] font-mono">{startIndex + 1}</strong> to{' '}
+                <strong className="text-[#18212F] font-mono">{endIndex}</strong> of{' '}
+                <strong className="text-[#18212F] font-mono">{filteredAppointments.length}</strong> appointments
+              </span>
+              <div className="flex items-center gap-1.5 ml-1 border-l border-[#F1E4E1] pl-2.5">
+                <span className="text-[11px]">Per page:</span>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="bg-[#FFF9F7] border border-[#F1E4E1] rounded-lg px-2 py-0.5 text-xs text-[#18212F] font-semibold focus:outline-none focus:border-[#F76762] cursor-pointer"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-2.5 py-1.5 rounded-lg border border-[#F1E4E1] bg-white text-xs font-semibold text-[#18212F] hover:bg-[#FFF9F7] disabled:opacity-40 disabled:hover:bg-white disabled:cursor-not-allowed transition-colors cursor-pointer flex items-center gap-1 shadow-2xs"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span>Previous</span>
+              </button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  if (
+                    totalPages > 5 &&
+                    page !== 1 &&
+                    page !== totalPages &&
+                    Math.abs(page - currentPage) > 1
+                  ) {
+                    if (page === 2 || page === totalPages - 1) {
+                      return (
+                        <span key={page} className="px-1 text-[#667085]">
+                          …
+                        </span>
+                      );
+                    }
+                    return null;
+                  }
+
+                  return (
+                    <button
+                      key={page}
+                      type="button"
+                      onClick={() => setCurrentPage(page)}
+                      className={`h-7 w-7 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                        currentPage === page
+                          ? 'bg-[#18212F] text-white shadow-2xs'
+                          : 'border border-[#F1E4E1] bg-white text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7]'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-2.5 py-1.5 rounded-lg border border-[#F1E4E1] bg-white text-xs font-semibold text-[#18212F] hover:bg-[#FFF9F7] disabled:opacity-40 disabled:hover:bg-white disabled:cursor-not-allowed transition-colors cursor-pointer flex items-center gap-1 shadow-2xs"
+              >
+                <span>Next</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
       </section>
 
     </div>

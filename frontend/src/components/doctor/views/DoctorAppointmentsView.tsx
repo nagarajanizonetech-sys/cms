@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Calendar, 
   Clock, 
@@ -13,7 +13,9 @@ import {
   Eye,
   Volume2,
   Sparkles,
-  Users
+  Users,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useReception } from '../../../context/ReceptionContext';
 import { AppointmentStatus, AppointmentType } from '../../../types/reception';
@@ -37,6 +39,8 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [typeFilter, setTypeFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(8);
 
   // Doctor Isolation: Only this doctor's appointments
   const myAppointments = appointments.filter((a) => 
@@ -95,6 +99,15 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
     };
     return (order[a.status] ?? 3) - (order[b.status] ?? 3);
   });
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, typeFilter, searchQuery]);
+
+  const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage) || 1;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, filteredAppointments.length);
+  const paginatedAppointments = filteredAppointments.slice(startIndex, startIndex + itemsPerPage);
 
   const handleStartConsultation = (appointmentId: string) => {
     if (currentDoctor?.id) {
@@ -305,11 +318,11 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
               ))}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="px-3 py-2 bg-white border border-[#F1E4E1] rounded-xl text-xs font-semibold text-[#18212F] focus:outline-none focus:border-[#F76762]"
+                className="w-full sm:w-auto px-3 py-2 bg-white border border-[#F1E4E1] rounded-xl text-xs font-semibold text-[#18212F] focus:outline-none focus:border-[#F76762]"
               >
                 <option value="All">All Visit Types</option>
                 <option value="New Consultation">New Consultation</option>
@@ -318,7 +331,7 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
                 <option value="Walk-in">Walk-in</option>
               </select>
 
-              <div className="relative w-52 sm:w-64">
+              <div className="relative w-full sm:w-64">
                 <Search className="w-4 h-4 text-[#667085] absolute left-3 top-2.5 pointer-events-none" />
                 <input
                   type="text"
@@ -333,8 +346,8 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
 
           {/* Appointments & Waiting Patients Table */}
           {filteredAppointments.length > 0 ? (
-            <div className="bg-white rounded-2xl border border-[#F1E4E1] overflow-hidden shadow-xs">
-              <table className="w-full text-left text-xs">
+            <div className="bg-white rounded-2xl border border-[#F1E4E1] overflow-x-auto shadow-xs">
+              <table className="w-full text-left text-xs min-w-[640px] sm:min-w-full">
                 <thead className="bg-[#FFF9F7] text-[10px] font-bold text-[#667085] uppercase tracking-wider border-b border-[#F1E4E1]">
                   <tr>
                     <th className="py-3 px-4">Token & Time</th>
@@ -346,7 +359,7 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F1E4E1]">
-                  {filteredAppointments.map((apt) => {
+                  {paginatedAppointments.map((apt) => {
                     const isWaiting = apt.status === 'Waiting';
                     const isInRoom = apt.status === 'In Consultation';
                     return (
@@ -445,6 +458,92 @@ export const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ 
                   })}
                 </tbody>
               </table>
+
+              {/* Pagination Bar */}
+              {filteredAppointments.length > 0 && (
+                <div className="p-3.5 border-t border-[#F1E4E1] bg-[#FFF9F7]/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#667085]">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span>
+                      Showing <strong className="text-[#18212F] font-mono">{startIndex + 1}</strong> to{' '}
+                      <strong className="text-[#18212F] font-mono">{endIndex}</strong> of{' '}
+                      <strong className="text-[#18212F] font-mono">{filteredAppointments.length}</strong> appointments
+                    </span>
+                    <div className="flex items-center gap-1.5 ml-1 border-l border-[#F1E4E1] pl-2.5">
+                      <span className="text-[11px]">Per page:</span>
+                      <select
+                        value={itemsPerPage}
+                        onChange={(e) => {
+                          setItemsPerPage(Number(e.target.value));
+                          setCurrentPage(1);
+                        }}
+                        className="bg-white border border-[#F1E4E1] rounded-lg px-2 py-0.5 text-xs text-[#18212F] font-semibold focus:outline-none focus:border-[#F76762] cursor-pointer"
+                      >
+                        <option value={5}>5</option>
+                        <option value={8}>8</option>
+                        <option value={15}>15</option>
+                        <option value={25}>25</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="px-2.5 py-1.5 rounded-lg border border-[#F1E4E1] bg-white text-xs font-semibold text-[#18212F] hover:bg-[#FFF9F7] disabled:opacity-40 disabled:hover:bg-white disabled:cursor-not-allowed transition-colors cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                      <span>Previous</span>
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                        if (
+                          totalPages > 5 &&
+                          page !== 1 &&
+                          page !== totalPages &&
+                          Math.abs(page - currentPage) > 1
+                        ) {
+                          if (page === 2 || page === totalPages - 1) {
+                            return (
+                              <span key={page} className="px-1 text-[#667085]">
+                                …
+                              </span>
+                            );
+                          }
+                          return null;
+                        }
+
+                        return (
+                          <button
+                            key={page}
+                            type="button"
+                            onClick={() => setCurrentPage(page)}
+                            className={`h-7 w-7 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                              currentPage === page
+                                ? 'bg-[#18212F] text-white shadow-2xs'
+                                : 'border border-[#F1E4E1] bg-white text-[#667085] hover:text-[#18212F] hover:bg-[#FFF9F7]'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="px-2.5 py-1.5 rounded-lg border border-[#F1E4E1] bg-white text-xs font-semibold text-[#18212F] hover:bg-[#FFF9F7] disabled:opacity-40 disabled:hover:bg-white disabled:cursor-not-allowed transition-colors cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <span>Next</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="bg-white rounded-2xl border border-dashed border-[#F1E4E1] p-10 text-center text-xs text-[#667085]">

@@ -98,30 +98,27 @@ const carePathSteps = [
   },
 ];
 
-const card3dVariants: Variants = {
+const cardVariants: Variants = {
   initial: (direction: number) => ({
     opacity: 0,
-    rotateY: direction > 0 ? -24 : 24,
-    x: direction > 0 ? 50 : -50,
-    scale: 0.94,
+    x: direction > 0 ? 28 : -28,
+    scale: 0.98,
   }),
   animate: {
     opacity: 1,
-    rotateY: 0,
     x: 0,
     scale: 1,
     transition: {
-      duration: 0.65,
+      duration: 0.45,
       ease: [0.16, 1, 0.3, 1],
     },
   },
   exit: (direction: number) => ({
     opacity: 0,
-    rotateY: direction > 0 ? 24 : -24,
-    x: direction > 0 ? -50 : 50,
-    scale: 0.94,
+    x: direction > 0 ? -24 : 24,
+    scale: 0.98,
     transition: {
-      duration: 0.38,
+      duration: 0.3,
       ease: [0.7, 0, 0.84, 0],
     },
   }),
@@ -209,34 +206,46 @@ function CareRelayBoard() {
             </div>
           </div>
 
-          {/* Smooth 3D Opening Card Area */}
-          <div className="relative min-h-[350px] [perspective:1400px] sm:min-h-[380px]">
+          {/* Card Showcase Area with Dedicated Background Design */}
+          <div className="relative overflow-hidden rounded-[28px] sm:rounded-[32px] border border-[#eedfd6] bg-gradient-to-br from-[#fcf7f3] via-[#fbf2eb]/90 to-[#f8ede5] p-5 sm:p-7 shadow-[inset_0_1px_3px_rgba(255,255,255,0.85),0_12px_32px_rgba(110,75,58,0.06)]">
+            {/* Background Texture & Dynamic Ambient Lighting */}
+            <div className="absolute inset-0 bg-[radial-gradient(#ebdcd2_1.2px,transparent_1.2px)] [background-size:20px_20px] opacity-60 pointer-events-none" />
+
+            <div
+              className="absolute -right-12 -top-12 h-64 w-64 rounded-full blur-3xl opacity-25 transition-colors duration-700 pointer-events-none"
+              style={{ backgroundColor: active.color }}
+            />
+            <div className="absolute -bottom-12 -left-12 h-56 w-56 rounded-full bg-[#f6cfb2]/25 blur-3xl pointer-events-none" />
+
+            {/* Corner registration marks */}
+            <span className="absolute top-3.5 left-4 select-none font-mono text-[9px] text-[#cfbeaf] opacity-60 pointer-events-none">+</span>
+            <span className="absolute top-3.5 right-4 select-none font-mono text-[9px] text-[#cfbeaf] opacity-60 pointer-events-none">+</span>
+            <span className="absolute bottom-3.5 left-4 select-none font-mono text-[9px] text-[#cfbeaf] opacity-60 pointer-events-none">+</span>
+            <span className="absolute bottom-3.5 right-4 select-none font-mono text-[9px] text-[#cfbeaf] opacity-60 pointer-events-none">+</span>
+
+            {/* Subtle concentric guide rings */}
+            <div className="absolute -right-20 top-1/2 -translate-y-1/2 h-72 w-72 rounded-full border border-[#eedfda]/60 pointer-events-none" />
+            <div className="absolute -right-8 top-1/2 -translate-y-1/2 h-48 w-48 rounded-full border border-[#eedfda]/40 pointer-events-none" />
+
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={active.step}
                 custom={direction}
-                variants={card3dVariants}
+                variants={cardVariants}
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                className="relative h-full min-h-[370px] sm:min-h-[380px] [transform-style:preserve-3d]"
+                className="relative z-10"
               >
-                <div className="absolute inset-x-[6%] bottom-[7%] h-20 rounded-[50%] bg-[#d9b7a8]/25 blur-2xl" />
-                <div className="absolute left-[8%] top-[13%] h-[250px] w-[84%] rotate-[-4deg] rounded-[28px] border border-[#eed6cb] bg-[#f8eae3] shadow-[0_24px_45px_rgba(120,76,57,.10)] [transform:rotateX(58deg)_rotateZ(-8deg)] sm:h-[310px]" />
-
-                {/* Main Floating Card */}
-                <motion.div
-                  animate={{ y: [0, -6, 0], rotateZ: [0, 0.8, 0] }}
-                  transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
-                  className="absolute left-[13%] top-[18%] z-20 w-[74%] rounded-[28px] border border-white/90 bg-white p-5 shadow-[0_25px_60px_rgba(95,61,47,.15)] sm:p-7 [transform:translateZ(55px)]"
-                >
+                {/* Main Card */}
+                <div className="rounded-[24px] border border-white/95 bg-white/95 p-5 shadow-[0_16px_40px_rgba(95,61,47,.08),0_2px_6px_rgba(95,61,47,.04)] backdrop-blur-md sm:p-7">
                   <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3.5">
                       <span
-                        className="flex h-12 w-12 items-center justify-center rounded-2xl transition-all duration-300"
+                        className="flex h-12 w-12 items-center justify-center rounded-2xl transition-all duration-300 sm:h-14 sm:w-14"
                         style={{ backgroundColor: `${active.color}25`, color: active.color }}
                       >
-                        <ActiveIcon size={23} />
+                        <ActiveIcon size={24} />
                       </span>
                       <div>
                         <p className="text-[10px] font-bold uppercase tracking-[.18em]" style={{ color: active.color }}>
@@ -247,12 +256,12 @@ function CareRelayBoard() {
                         </h4>
                       </div>
                     </div>
-                    <span className="text-2xl font-bold text-[#ddd2cc]">{active.step}</span>
+                    <span className="text-2xl font-bold text-[#ddd2cc] sm:text-3xl">{active.step}</span>
                   </div>
 
                   {/* 2-Line Content Per Card */}
-                  <div className="mt-6 max-w-md space-y-1.5 text-sm leading-relaxed">
-                    <p className="font-semibold text-[#2c2421] sm:text-base">
+                  <div className="mt-6 max-w-lg space-y-1.5 text-sm leading-relaxed sm:text-base">
+                    <p className="font-semibold text-[#2c2421]">
                       {active.detailLine1}
                     </p>
                     <p className="text-xs font-medium text-[#746b67] sm:text-sm">
@@ -261,7 +270,7 @@ function CareRelayBoard() {
                   </div>
 
                   {/* Visual Status Indicator Footer */}
-                  <div className="mt-6 grid grid-cols-3 gap-2 border-t border-[#f0e7e2] pt-4">
+                  <div className="mt-6 grid grid-cols-3 gap-2.5 border-t border-[#f0e7e2] pt-4">
                     <div className="rounded-xl bg-[#fff7f3] p-3">
                       <span className="block h-2 w-12 rounded-full bg-[#f4c6ba]" />
                       <span className="mt-2.5 block h-2 w-16 rounded-full bg-[#eee4df]" />
@@ -274,13 +283,18 @@ function CareRelayBoard() {
                       <Check size={21} />
                     </div>
                   </div>
-                </motion.div>
-
-                <div className="absolute bottom-[11%] left-[9%] z-30 flex items-center gap-2 rounded-full border border-white/80 bg-white/90 px-3 py-2 text-[9px] font-bold uppercase tracking-[.15em] text-[#786b65] shadow-lg">
-                  <span className="h-2 w-2 rounded-full bg-[#fb866e]" /> Context passed forward
                 </div>
-                <div className="absolute bottom-[10%] right-[8%] z-30 rounded-full border border-[#edc2b5] bg-[#fff1eb] px-3 py-2 text-[9px] font-bold uppercase tracking-[.14em] text-[#d67562] shadow-sm">
-                  Next: {carePathSteps[(activeStep + 1) % carePathSteps.length].role}
+
+                {/* Badges bar */}
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 px-1">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/90 px-3.5 py-1.5 text-[9px] font-bold uppercase tracking-[.15em] text-[#786b65] shadow-sm">
+                    <span className="h-2 w-2 rounded-full bg-[#fb866e]" />
+                    Context passed forward
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 rounded-full border border-[#edc2b5] bg-[#fff1eb] px-3.5 py-1.5 text-[9px] font-bold uppercase tracking-[.14em] text-[#d67562] shadow-sm">
+                    <span>Next:</span>
+                    <span className="font-extrabold">{carePathSteps[(activeStep + 1) % carePathSteps.length].role}</span>
+                  </div>
                 </div>
               </motion.div>
             </AnimatePresence>

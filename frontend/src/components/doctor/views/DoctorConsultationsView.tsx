@@ -76,8 +76,8 @@ export const DoctorConsultationsView: React.FC<DoctorConsultationsViewProps> = (
 
       {/* Consultations Table */}
       {filteredConsultations.length > 0 ? (
-        <div className="bg-white rounded-2xl border border-[#F1E4E1] overflow-hidden shadow-xs">
-          <table className="w-full text-left text-xs">
+        <div className="bg-white rounded-2xl border border-[#F1E4E1] overflow-x-auto shadow-xs">
+          <table className="w-full text-left text-xs min-w-[700px] sm:min-w-full">
             <thead className="bg-[#FFF9F7] text-[10px] font-bold text-[#667085] uppercase tracking-wider border-b border-[#F1E4E1]">
               <tr>
                 <th className="py-3 px-4">Date & Time</th>

@@ -93,27 +93,27 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#F1E4E1] transition-all">
-      <div className="px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
+      <div className="px-3 sm:px-6 lg:px-8 min-h-[58px] sm:h-20 py-2 sm:py-0 flex items-center justify-between gap-2 sm:gap-4">
         
         {/* Left: Mobile hamburger & Page Title / Breadcrumb */}
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
           <button
             onClick={onToggleSidebarMobile}
-            className="lg:hidden p-2 rounded-xl text-[#18212F] hover:bg-[#FFF9F7] border border-[#F1E4E1] cursor-pointer"
+            className="lg:hidden p-1.5 sm:p-2 rounded-xl text-[#18212F] hover:bg-[#FFF9F7] border border-[#F1E4E1] cursor-pointer shrink-0"
             aria-label="Open navigation menu"
           >
             <Menu className="w-5 h-5" />
           </button>
 
-          <div className="min-w-0 flex flex-col justify-center">
-            <h1 className="text-lg sm:text-xl font-bold text-[#18212F] tracking-tight truncate leading-tight">
+          <div className="min-w-0 flex-1 flex flex-col justify-center">
+            <h1 className="text-xs xs:text-sm sm:text-lg md:text-xl font-bold text-[#18212F] tracking-tight leading-snug sm:leading-tight line-clamp-2 sm:truncate break-words sm:break-normal">
               {title}
             </h1>
           </div>
         </div>
 
         {/* Right: Quick Search, Doctor Availability, Notifications & Doctor Profile */}
-        <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-3.5 shrink-0">
           
           {/* Global Clinical Search */}
           <div ref={searchBoxRef} className="relative hidden md:block">
@@ -170,8 +170,11 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
 
           {/* Availability Status Toggle */}
           <div className="relative">
-            <div className="flex items-center gap-1.5 px-3 h-10 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-xs font-semibold text-[#18212F] shrink-0">
-              <Circle className={`w-2.5 h-2.5 ${getStatusColor(currentDoctor?.status)}`} />
+            <div 
+              className="flex items-center justify-center sm:justify-start gap-1 sm:gap-1.5 w-9 h-9 sm:w-auto sm:h-10 px-0 sm:px-3 bg-[#FFF9F7] border border-[#F1E4E1] rounded-xl text-xs font-semibold text-[#18212F] shrink-0 relative"
+              title={`Doctor status: ${currentDoctor?.status || 'Available'}`}
+            >
+              <Circle className={`w-2.5 h-2.5 ${getStatusColor(currentDoctor?.status)} shrink-0`} />
               <select
                 value={currentDoctor?.status || 'Available'}
                 onChange={(e) => {
@@ -179,7 +182,7 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
                     setDoctorAvailability(currentDoctor.id, e.target.value as DoctorStatus);
                   }
                 }}
-                className="bg-transparent border-none text-xs font-semibold text-[#18212F] focus:outline-none cursor-pointer pr-1"
+                className="absolute inset-0 opacity-0 sm:opacity-100 sm:relative bg-transparent border-none text-xs font-semibold text-[#18212F] focus:outline-none cursor-pointer sm:pr-1 w-full h-full"
                 aria-label="Doctor Availability Status"
               >
                 <option value="Available">Available</option>
@@ -194,7 +197,7 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
           <div className="relative">
             <button
               onClick={() => setIsNotifOpen(!isNotifOpen)}
-              className="relative w-10 h-10 rounded-xl text-[#18212F] hover:bg-[#FFF9F7] border border-[#F1E4E1] hover:border-[#F76762]/30 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-[#18212F] hover:bg-[#FFF9F7] border border-[#F1E4E1] hover:border-[#F76762]/30 flex items-center justify-center transition-colors cursor-pointer shrink-0"
               aria-label="Doctor Notifications"
               title="Clinic Notifications"
             >
@@ -219,7 +222,7 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
           <div ref={profileMenuRef} className="relative">
             <button
               onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-              className="flex items-center gap-2.5 h-10 px-2.5 sm:px-3 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] hover:border-[#F76762]/30 transition-all cursor-pointer shrink-0"
+              className="flex items-center justify-center sm:justify-start gap-2.5 w-9 h-9 sm:w-auto sm:h-10 px-0 sm:px-3 rounded-xl border border-[#F1E4E1] hover:bg-[#FFF9F7] hover:border-[#F76762]/30 transition-all cursor-pointer shrink-0"
               aria-label="User profile menu"
             >
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#F76762] to-[#FB866E] flex items-center justify-center text-white font-bold text-xs shadow-xs shrink-0">
@@ -238,7 +241,7 @@ export const DoctorHeader: React.FC<DoctorHeaderProps> = ({
 
             {/* Profile Dropdown Menu */}
             {isProfileMenuOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl border border-[#F1E4E1] shadow-xl py-2 z-50 animate-in fade-in duration-150">
+              <div className="fixed inset-x-3 top-16 sm:inset-x-auto sm:top-auto sm:absolute sm:right-0 sm:mt-2 w-auto sm:w-64 max-w-sm ml-auto bg-white rounded-2xl border border-[#F1E4E1] shadow-xl py-2 z-50 animate-in fade-in duration-150">
                 <div className="px-4 py-3 border-b border-[#F1E4E1] bg-[#FFF9F7]/60">
                   <div className="text-xs font-bold text-[#18212F]">{currentDoctor?.name}</div>
                   <div className="text-[11px] text-[#667085]">{currentDoctor?.specialization}</div>
